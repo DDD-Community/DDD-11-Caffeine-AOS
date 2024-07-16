@@ -33,6 +33,9 @@ private val LightColorScheme = lightColorScheme(
     */
 )
 
+/**
+ * TODO: 재정의 필요할듯ㅇ.ㅇ!
+ */
 @Composable
 fun PoisonTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -52,7 +55,6 @@ fun PoisonTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
         content = content
     )
 }
