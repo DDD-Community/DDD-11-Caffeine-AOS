@@ -63,18 +63,31 @@ fun HomeScreen() {
                 .padding(horizontal = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .height(12.dp)
+            )
             TodayPoisonStatus(
                 currentPoison = 6,
                 poisonPurpose = 4,
                 poisonUnit = "샷",
                 description = "카페인 과다섭취는 두통, 불면증, 행동 불안,\n혈압 상승 등을 일으킬 수 있대요!",
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
             )
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .height(20.dp)
+            )
             Image(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .background(Color.White)
                     .height(290.dp),
                 painter = painterResource(id = R.drawable.ic_coffee_44),
                 contentDescription = ""
