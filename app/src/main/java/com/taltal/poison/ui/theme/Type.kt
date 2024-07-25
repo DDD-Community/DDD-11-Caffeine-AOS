@@ -1,10 +1,17 @@
 package com.taltal.poison.ui.theme
 
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.sp
+import com.taltal.poison.R
+
+internal val galmuriFamily = FontFamily(
+    Font(R.font.galmuri, FontWeight.Normal)
+)
 
 val title_24bd = TextStyle(
     fontWeight = FontWeight.W700,
@@ -59,4 +66,12 @@ val caption_12rg = TextStyle(
     fontSize = 12.sp,
     lineHeight = 15.6.sp,
     letterSpacing = TextUnit(-0.04f, TextUnitType.Em)
+)
+
+val dialogue_14rg = TextStyle(
+    fontWeight = FontWeight.W400,
+    fontSize = 14.sp,
+    lineHeight = 21.sp,
+    letterSpacing = TextUnit(-0.03f, TextUnitType.Em),
+    fontFamily = galmuriFamily
 )
