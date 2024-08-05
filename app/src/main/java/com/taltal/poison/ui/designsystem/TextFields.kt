@@ -2,7 +2,9 @@ package com.taltal.poison.ui.designsystem
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -117,10 +119,14 @@ fun RoundedTextField(
 }
 
 @Composable
-fun CharacterMessage(text: String) {
+fun CharacterMessage(
+    text: String,
+    tailPosition: Int = MESSAGE_TAIL_END
+) {
     var displayedText by remember { mutableStateOf("") }
 
     LaunchedEffect(text) {
+        displayedText = ""
         text.forEachIndexed { _, char ->
             delay(100) // 각 문자 사이의 지연 시간 (밀리초)
             displayedText += char
@@ -130,7 +136,7 @@ fun CharacterMessage(text: String) {
     Box(
         modifier = Modifier
             .padding(12.dp)
-            .fillMaxWidth(0.7f)
+            .fillMaxWidth(if(tailPosition == MESSAGE_TAIL_END) 0.7f else 1f)
             .wrapContentHeight()
     ) {
         Canvas(modifier = Modifier.matchParentSize()) {
@@ -142,7 +148,7 @@ fun CharacterMessage(text: String) {
             val roundRect = RoundRect(
                 left = 0f,
                 top = 0f,
-                right = size.width - tailWidth,
+                right = if (tailPosition == MESSAGE_TAIL_END) size.width - tailWidth else size.width,
                 bottom = size.height,
                 cornerRadius = CornerRadius(cornerRadius, cornerRadius)
             )
@@ -152,12 +158,17 @@ fun CharacterMessage(text: String) {
 
             // 말풍선 꼬리
             val tailPath = Path().apply {
-                moveTo(size.width - tailWidth, size.height / 2 - tailHeight / 2)
-                lineTo(size.width, size.height / 2)
-                lineTo(size.width - tailWidth, size.height / 2 + tailHeight / 2)
+                if (tailPosition == MESSAGE_TAIL_END) {
+                    moveTo(size.width - tailWidth, size.height / 2 - tailHeight / 2)
+                    lineTo(size.width, size.height / 2)
+                    lineTo(size.width - tailWidth, size.height / 2 + tailHeight / 2)
+                } else if (tailPosition == MESSAGE_TAIL_BOTTOM) {
+                    moveTo(size.width / 2 - tailWidth / 2, size.height)
+                    lineTo(size.width / 2, size.height + tailHeight)
+                    lineTo(size.width / 2 + tailWidth / 2, size.height)
+                }
                 close()
             }
-
             drawPath(rectPath, color = Color(0xFF3A3F47), style = Fill)
             drawPath(tailPath, color = Color(0xFF3A3F47), style = Fill)
         }
@@ -174,8 +185,23 @@ fun CharacterMessage(text: String) {
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun CharacterMessageView() {
     CharacterMessage("닉네임을\n입력해주세요.")
 }
+
+@Preview(showBackground = true)
+@Composable
+private fun BottomCharacterMessageView() {
+    CharacterMessage("닉네임을\n입력해주세요.", tailPosition = MESSAGE_TAIL_BOTTOM)
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun RoundedTextFieldPreview() {
+    RoundedTextField(modifier = Modifier)
+}
+
+const val MESSAGE_TAIL_END = 0
+const val MESSAGE_TAIL_BOTTOM = 1
