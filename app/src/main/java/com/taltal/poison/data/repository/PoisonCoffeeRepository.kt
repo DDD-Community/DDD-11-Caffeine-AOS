@@ -2,8 +2,9 @@ package com.taltal.poison.data.repository
 
 import com.taltal.poison.data.api.CoffeeLogDao
 import com.taltal.poison.data.api.PoisonApi
+import javax.inject.Inject
 
-class PoisonCoffeeRepository(
+class PoisonCoffeeRepository @Inject constructor(
     private val coffeeLogDao: CoffeeLogDao,
     private val poisonApi: PoisonApi
 ) {
@@ -12,4 +13,7 @@ class PoisonCoffeeRepository(
 
     suspend fun getCoffeeLogByDay(year: Int, month: Int, day: Int) =
         coffeeLogDao.getCoffeeLogByDay(year, month, day)
+
+    suspend fun checkNicknameDuplicate(nickname: String): Boolean = false
+        //poisonApi.checkNicknameDuplicate(nickname)
 }

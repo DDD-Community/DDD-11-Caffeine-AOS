@@ -81,7 +81,7 @@ fun RoundedTextField(
                 .fillMaxWidth()
                 .border(
                     1.dp,
-                    if (isError) Color.Red else taltal_neutral_10,
+                    if (isError && textInput.isNotEmpty()) Color.Red else taltal_neutral_10,
                     RoundedCornerShape(8.dp)
                 ),
             shape = RoundedCornerShape(8.dp),

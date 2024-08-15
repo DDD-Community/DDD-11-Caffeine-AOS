@@ -76,6 +76,7 @@ fun NicknameSection(
         NicknameHints(
             isError = !isNicknameValid,
             isInputEmpty = nickname.isEmpty(),
+            errorText = viewModel.errorText.value,
             modifier = Modifier.padding(horizontal = 16.dp)
         )
         Spacer(modifier = Modifier.weight(1f))
@@ -83,7 +84,7 @@ fun NicknameSection(
             text = "다음",
             isEnabled = isNicknameValid,
             onClick = {
-                viewModel.moveToNextPage()
+                viewModel.checkUserNicknameDuplicate()
             }
         )
     }
@@ -92,6 +93,7 @@ fun NicknameSection(
 @Composable
 fun NicknameHints(
     isError: Boolean,
+    errorText: String,
     isInputEmpty: Boolean,
     modifier: Modifier = Modifier
 ) {
@@ -116,7 +118,7 @@ fun NicknameHints(
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = "잘못된 입력입니다.",
+                    text = errorText,
                     fontSize = 12.sp,
                     color = Color.Red,
                     fontWeight = FontWeight.Normal
