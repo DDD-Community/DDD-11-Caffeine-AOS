@@ -39,6 +39,7 @@ import com.taltal.poison.ui.designsystem.CharacterMessage
 import com.taltal.poison.ui.designsystem.MESSAGE_TAIL_START
 import com.taltal.poison.ui.theme.body_14md
 import com.taltal.poison.ui.theme.taltal_neutral_10
+import com.taltal.poison.ui.theme.taltal_neutral_30
 import com.taltal.poison.ui.theme.taltal_neutral_5
 import com.taltal.poison.ui.theme.taltal_neutral_60
 import com.taltal.poison.ui.theme.taltal_neutral_80
@@ -94,18 +95,20 @@ fun Day(
             modifier = Modifier
                 .aspectRatio(1f)
                 .padding(6.dp)
-                .clickable{ onClick(day) },
+                .clickable { onClick(day) },
             contentAlignment = Alignment.Center,
         ) {
-            Image(
-                imageVector = ImageVector.vectorResource(id = poisonState.getCalendarDayBackgrountResId()),
-                contentDescription = ""
-            )
-            if (poisonState == PoisonState.Empty) {
+            if (poisonState != PoisonState.None) {
+                Image(
+                    imageVector = ImageVector.vectorResource(id = poisonState.getCalendarDayBackgrountResId()),
+                    contentDescription = ""
+                )
+            }
+            if (poisonState in listOf(PoisonState.Empty, PoisonState.None)) {
                 Text(
                     modifier = Modifier.align(Alignment.Center),
                     text = day.date.dayOfMonth.toString(),
-                    style = title_14bd.copy(color = taltal_neutral_60),
+                    style = title_14bd.copy(color = if (poisonState == PoisonState.Empty) taltal_neutral_60 else taltal_neutral_30),
                 )
             }
             if (isSelected) {

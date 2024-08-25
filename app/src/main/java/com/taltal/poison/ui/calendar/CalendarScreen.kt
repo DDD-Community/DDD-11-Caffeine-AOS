@@ -84,12 +84,15 @@ fun CalendarScreen(adjacentMonths: Long = 12) {
             },
         )
         Spacer(modifier = Modifier.height(20.dp))
-        DayDetail(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp),
-            poisonState = PoisonState.entries.random()
-        )
+        val poisonState = PoisonState.entries.random()
+        if (poisonState != PoisonState.None) {
+            DayDetail(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
+                poisonState = PoisonState.entries.random()
+            )
+        }
     }
 }
 
