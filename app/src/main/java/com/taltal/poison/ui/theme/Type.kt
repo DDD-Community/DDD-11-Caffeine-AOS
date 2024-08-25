@@ -43,6 +43,12 @@ val title_12bd = TextStyle(
     lineHeight = 15.6.sp,
     letterSpacing = TextUnit(-0.02f, TextUnitType.Em)
 )
+val title_14bd = TextStyle(
+    fontWeight = FontWeight.W700,
+    fontSize = 14.sp,
+    lineHeight = 18.2.sp,
+    letterSpacing = TextUnit(-0.02f, TextUnitType.Em)
+)
 val body_16md = TextStyle(
     fontWeight = FontWeight.W500,
     fontSize = 16.sp,

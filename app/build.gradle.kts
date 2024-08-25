@@ -77,6 +77,8 @@ dependencies {
     implementation(libs.room.ktx)
     implementation(libs.room.runtime)
 
+    implementation(libs.calendar)
+
     implementation(libs.coil.kt)
     implementation(libs.coil.kt.compose)
     implementation(libs.coil.kt.svg)
