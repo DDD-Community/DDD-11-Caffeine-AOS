@@ -188,7 +188,7 @@ fun DayDetail(
                 contentDescription = ""
             )
             CharacterMessage(
-                text = "오전 11시 29분 +6샷\n오 10시 39분 +2샷",
+                text = "오전 11시 29분 +6샷\n오전 10시 39분 +2샷",
                 tailPosition = MESSAGE_TAIL_START
             )
         }

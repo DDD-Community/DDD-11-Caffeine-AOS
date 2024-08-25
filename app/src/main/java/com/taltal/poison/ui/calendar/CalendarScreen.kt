@@ -28,7 +28,7 @@ import java.time.DayOfWeek
 import java.time.YearMonth
 
 @Composable
-fun CalendarScreen(adjacentMonths: Long = 500) {
+fun CalendarScreen(adjacentMonths: Long = 12) {
     val currentMonth = remember { YearMonth.now() }
     val startMonth = remember { currentMonth.minusMonths(adjacentMonths) }
     val endMonth = remember { currentMonth.plusMonths(adjacentMonths) }
