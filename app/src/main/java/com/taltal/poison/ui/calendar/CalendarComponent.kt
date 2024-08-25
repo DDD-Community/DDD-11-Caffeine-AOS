@@ -58,8 +58,11 @@ import java.util.Locale
 @Composable
 fun CalendarHeader() {
     Row(
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.5.dp),
-        horizontalArrangement = Arrangement.Start
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .height(56.dp),
+        horizontalArrangement = Arrangement.Start,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(text = "캘린더", style = title_18sb.copy(color = taltal_neutral_90))
     }
@@ -86,35 +89,34 @@ fun Day(
     isSelected: Boolean,
     onClick: (CalendarDay) -> Unit
 ) {
-    Box(
-        modifier = Modifier
-            .aspectRatio(1f)
-            .padding(6.dp)
-            .clickable(
-                enabled = day.position == DayPosition.MonthDate,
-                onClick = { onClick(day) },
-            ),
-        contentAlignment = Alignment.Center,
-    ) {
-        Image(
-            imageVector = ImageVector.vectorResource(id = poisonState.getCalendarDayBackgrountResId()),
-            contentDescription = ""
-        )
-        if (poisonState == PoisonState.Empty) {
-            Text(
-                modifier = Modifier.align(Alignment.Center),
-                text = day.date.dayOfMonth.toString(),
-                style = title_14bd.copy(color = taltal_neutral_60),
+    if (day.position == DayPosition.MonthDate) {
+        Box(
+            modifier = Modifier
+                .aspectRatio(1f)
+                .padding(6.dp)
+                .clickable{ onClick(day) },
+            contentAlignment = Alignment.Center,
+        ) {
+            Image(
+                imageVector = ImageVector.vectorResource(id = poisonState.getCalendarDayBackgrountResId()),
+                contentDescription = ""
             )
-        }
-        if (isSelected) {
-            Canvas(
-                modifier = Modifier
-                    .padding(top = 2.dp, end = 2.dp)
-                    .align(Alignment.TopEnd)
-                    .size(6.dp)
-            ) {
-                drawCircle(color = taltal_yellow_70)
+            if (poisonState == PoisonState.Empty) {
+                Text(
+                    modifier = Modifier.align(Alignment.Center),
+                    text = day.date.dayOfMonth.toString(),
+                    style = title_14bd.copy(color = taltal_neutral_60),
+                )
+            }
+            if (isSelected) {
+                Canvas(
+                    modifier = Modifier
+                        .padding(top = 2.dp, end = 2.dp)
+                        .align(Alignment.TopEnd)
+                        .size(6.dp)
+                ) {
+                    drawCircle(color = taltal_yellow_70)
+                }
             }
         }
     }
