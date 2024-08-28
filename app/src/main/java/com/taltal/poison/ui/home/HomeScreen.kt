@@ -50,6 +50,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.taltal.poison.R
+import com.taltal.poison.ui.calendar.CalendarScreen
 import com.taltal.poison.ui.mypage.MyPageScreen
 import com.taltal.poison.ui.navigation.BottomNavItem
 import com.taltal.poison.ui.theme.body_14md
@@ -96,7 +97,7 @@ fun HomeScreen() {
                 HomeLogScreen()
             }
             composable(BottomNavItem.Calendar.screenRoute) {
-                HomeLogScreen() // 캘린더페이지로 변경
+                CalendarScreen()
             }
             composable(BottomNavItem.MyPage.screenRoute) {
                 MyPageScreen()
@@ -110,6 +111,8 @@ fun HomeLogScreen() {
     Column(
         modifier =
             Modifier
+                .background(Color.White)
+                .fillMaxSize()
                 .padding(horizontal = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
