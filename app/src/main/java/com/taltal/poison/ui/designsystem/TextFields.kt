@@ -106,7 +106,10 @@ fun RoundedTextField(
                 }
             },
             maxLines = maxLine,
-            keyboardOptions = KeyboardOptions(keyboardType = keyboardType,imeAction = ImeAction.Done),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = keyboardType,
+                imeAction = ImeAction.Done
+            ),
             keyboardActions = KeyboardActions(
                 onDone = {
                     scope.launch {
@@ -136,7 +139,7 @@ fun CharacterMessage(
     Box(
         modifier = Modifier
             .padding(12.dp)
-            .fillMaxWidth(if(tailPosition == MESSAGE_TAIL_END) 0.7f else 1f)
+            .fillMaxWidth(if (tailPosition == MESSAGE_TAIL_BOTTOM) 1f else 0.7f)
             .wrapContentHeight()
     ) {
         Canvas(modifier = Modifier.matchParentSize()) {
@@ -146,9 +149,9 @@ fun CharacterMessage(
 
             // 말풍선 본체
             val roundRect = RoundRect(
-                left = 0f,
+                left = if (tailPosition == MESSAGE_TAIL_START) tailWidth else 0f,
                 top = 0f,
-                right = if (tailPosition == MESSAGE_TAIL_END) size.width - tailWidth else size.width,
+                right = if (tailPosition == MESSAGE_TAIL_BOTTOM) size.width else size.width - tailWidth,
                 bottom = size.height,
                 cornerRadius = CornerRadius(cornerRadius, cornerRadius)
             )
@@ -158,14 +161,28 @@ fun CharacterMessage(
 
             // 말풍선 꼬리
             val tailPath = Path().apply {
-                if (tailPosition == MESSAGE_TAIL_END) {
-                    moveTo(size.width - tailWidth, size.height / 2 - tailHeight / 2)
-                    lineTo(size.width, size.height / 2)
-                    lineTo(size.width - tailWidth, size.height / 2 + tailHeight / 2)
-                } else if (tailPosition == MESSAGE_TAIL_BOTTOM) {
-                    moveTo(size.width / 2 - tailWidth / 2, size.height)
-                    lineTo(size.width / 2, size.height + tailHeight)
-                    lineTo(size.width / 2 + tailWidth / 2, size.height)
+                when (tailPosition) {
+                    MESSAGE_TAIL_END -> {
+                        moveTo(size.width - tailWidth, size.height / 2 - tailHeight / 2)
+                        lineTo(size.width, size.height / 2)
+                        lineTo(size.width - tailWidth, size.height / 2 + tailHeight / 2)
+                    }
+
+                    MESSAGE_TAIL_START -> {
+                        moveTo(0f, size.height / 2)
+                        lineTo(tailWidth, size.height / 2 - tailHeight / 2)
+                        lineTo(tailWidth, size.height / 2 + tailHeight / 2)
+                    }
+
+                    MESSAGE_TAIL_BOTTOM -> {
+                        moveTo(size.width / 2 - tailWidth / 2, size.height)
+                        lineTo(size.width / 2, size.height + tailHeight)
+                        lineTo(size.width / 2 + tailWidth / 2, size.height)
+                    }
+
+                    else -> {
+                        // do nothing
+                    }
                 }
                 close()
             }
@@ -179,6 +196,7 @@ fun CharacterMessage(
             color = Color.White,
             modifier = Modifier
                 .padding(16.dp)
+                .padding(start = if(tailPosition == MESSAGE_TAIL_START) 10.dp else 0.dp)
                 .align(Alignment.CenterStart)
                 .background(Color.Transparent)
         )
@@ -189,6 +207,12 @@ fun CharacterMessage(
 @Composable
 private fun CharacterMessageView() {
     CharacterMessage("닉네임을\n입력해주세요.")
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun CharacterMessageViewStart() {
+    CharacterMessage("닉네임을\n입력해주세요.", MESSAGE_TAIL_START)
 }
 
 @Preview(showBackground = true)
@@ -205,3 +229,4 @@ private fun RoundedTextFieldPreview() {
 
 const val MESSAGE_TAIL_END = 0
 const val MESSAGE_TAIL_BOTTOM = 1
+const val MESSAGE_TAIL_START = 2
