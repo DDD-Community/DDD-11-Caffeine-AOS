@@ -14,6 +14,7 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,29 +22,48 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.flowWithLifecycle
 import com.taltal.poison.R
 import com.taltal.poison.ui.designsystem.CharacterMessage
 import com.taltal.poison.ui.designsystem.MESSAGE_TAIL_BOTTOM
+import com.taltal.poison.ui.navigation.NavRoute
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @Composable
-fun OnBoardingScreen(modifier: Modifier = Modifier) {
+fun OnBoardingScreen(
+    actionRoute: (NavRoute) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val viewModel: OnBoardingViewModel = hiltViewModel()
     val pagerState = viewModel.pagerState
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+
+    LaunchedEffect(Unit) {
+        launch {
+            viewModel.navigator.flowWithLifecycle(lifecycle).collectLatest { route ->
+                actionRoute(route)
+            }
+        }
+    }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
             OnBoardingHeader(
-                onClickBackButton = { viewModel.moveToPreviousPage() }, pagerState = pagerState
+                onClickBackButton = { viewModel.moveToPreviousPage() },
+                pagerState = pagerState,
             )
         },
-        containerColor = Color.White
+        containerColor = Color.White,
     ) { paddingValues ->
         OnBoardingViewPager(
             viewModel = viewModel,
             pagerState = pagerState,
-            modifier = Modifier
-                .padding(top = paddingValues.calculateTopPadding())
+            modifier =
+                Modifier
+                    .padding(top = paddingValues.calculateTopPadding()),
         )
     }
 }
@@ -51,14 +71,14 @@ fun OnBoardingScreen(modifier: Modifier = Modifier) {
 @Composable
 fun OnBoardingHeader(
     onClickBackButton: () -> Unit = { },
-    pagerState: PagerState
+    pagerState: PagerState,
 ) {
     Row(modifier = Modifier.fillMaxWidth()) {
         if (pagerState.currentPage != NICKNAME_PAGE) {
             IconButton(onClick = onClickBackButton) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_back_24),
-                    contentDescription = null
+                    contentDescription = null,
                 )
             }
         } else {
@@ -69,20 +89,21 @@ fun OnBoardingHeader(
 
 @Composable
 fun OnBoardingViewPager(
-    viewModel: OnBoardingViewModel = hiltViewModel(),
+    viewModel: OnBoardingViewModel,
     pagerState: PagerState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     HorizontalPager(
         modifier = modifier,
         verticalAlignment = Alignment.Top,
         state = pagerState,
-        userScrollEnabled = false
+        userScrollEnabled = false,
     ) { page ->
         when (page) {
-            NICKNAME_PAGE -> NicknameSection(
-                viewModel = viewModel
-            )
+            NICKNAME_PAGE ->
+                NicknameSection(
+                    viewModel = viewModel,
+                )
 
             PROFILE_PAGE -> ProfileSection(viewModel = viewModel)
             PURPOSE_PAGE -> PurposeSection(viewModel = viewModel)
@@ -93,21 +114,25 @@ fun OnBoardingViewPager(
 }
 
 @Composable
-fun LoadingScreen(modifier: Modifier = Modifier, viewModel: OnBoardingViewModel = hiltViewModel()) {
+fun LoadingScreen(
+    modifier: Modifier = Modifier,
+    viewModel: OnBoardingViewModel = hiltViewModel(),
+) {
     viewModel.delayAndMoveToNextPage()
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = 92.dp)
-            .padding(bottom = 16.dp),
+        modifier =
+            modifier
+                .fillMaxSize()
+                .padding(horizontal = 92.dp)
+                .padding(bottom = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
     ) {
         CharacterMessage(text = messageList[3], tailPosition = MESSAGE_TAIL_BOTTOM)
         Image(
             painter = painterResource(id = R.drawable.happy_poe),
             contentDescription = null,
-            modifier = Modifier.size(width = 100.dp, height = 138.dp)
+            modifier = Modifier.size(width = 100.dp, height = 138.dp),
         )
     }
 }
@@ -115,7 +140,9 @@ fun LoadingScreen(modifier: Modifier = Modifier, viewModel: OnBoardingViewModel 
 @Preview
 @Composable
 private fun OnBoardingPreview() {
-    OnBoardingScreen()
+    OnBoardingScreen(
+        actionRoute = { },
+    )
 }
 
 const val NICKNAME_PAGE = 0

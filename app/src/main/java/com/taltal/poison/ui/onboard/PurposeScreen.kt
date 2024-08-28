@@ -109,7 +109,7 @@ fun GoalSection(viewModel: OnBoardingViewModel = hiltViewModel()) {
             text = "완료",
             isEnabled = selectedGoal.value.isNotEmpty(),
             onClick = {
-                viewModel.moveToNextPage()
+                viewModel.uploadUserData()
             }
         )
     }

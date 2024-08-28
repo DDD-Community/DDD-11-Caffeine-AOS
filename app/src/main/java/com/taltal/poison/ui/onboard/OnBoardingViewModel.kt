@@ -5,11 +5,15 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.taltal.poison.data.repository.PoisonCoffeeRepository
+import com.taltal.poison.ui.navigation.NavRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -50,6 +54,9 @@ class OnBoardingViewModel @Inject constructor(
     val pagerState = PagerState(0) {
         5
     }
+
+    private val _navigator = MutableSharedFlow<NavRoute>()
+    val navigator: SharedFlow<NavRoute> get() = _navigator.asSharedFlow()
 
     fun updateNickname(newNickname: String) {
         viewModelScope.launch {
@@ -163,7 +170,9 @@ class OnBoardingViewModel @Inject constructor(
     }
 
     fun uploadUserData() {
-        // upload user data to server
-
+        viewModelScope.launch {
+            // upload user data to server
+            _navigator.emit(NavRoute.Home)
+        }
     }
 }
