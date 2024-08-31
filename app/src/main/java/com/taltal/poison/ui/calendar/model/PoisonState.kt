@@ -1,4 +1,4 @@
-package com.taltal.poison.ui.calendar
+package com.taltal.poison.ui.calendar.model
 
 import androidx.compose.ui.graphics.Color
 import com.taltal.poison.R
