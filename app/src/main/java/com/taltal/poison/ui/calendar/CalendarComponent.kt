@@ -161,7 +161,7 @@ fun CalendarTitle(
 
 @Composable
 fun DayDetail(
-    poisonState: PoisonState,
+    dailyPoisonDetail: DailyPoisonDetail.Success,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -176,24 +176,26 @@ fun DayDetail(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            modifier = Modifier.background(
-                shape = RoundedCornerShape(4.dp, 16.dp, 4.dp, 16.dp),
-                color = taltal_neutral_5
-            ),
-            text = "2024년 8월 10일(토)",
+            modifier = Modifier
+                .background(
+                    shape = RoundedCornerShape(4.dp, 16.dp, 4.dp, 16.dp),
+                    color = taltal_neutral_5
+                )
+                .padding(horizontal = 16.dp, vertical = 4.dp),
+            text = dailyPoisonDetail.title,
             style = title_14bd.copy(color = taltal_neutral_80)
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "한 잔도 안마셨어요!", style = title_20sb.copy(color = taltal_neutral_90))
+        Text(text = dailyPoisonDetail.subTitle, style = title_20sb.copy(color = taltal_neutral_90))
         Spacer(modifier = Modifier.height(12.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
                 modifier = Modifier.size(60.dp),
-                painter = painterResource(id = poisonState.getDailyCoffeeImageResId()),
+                painter = painterResource(id = dailyPoisonDetail.imageResId),
                 contentDescription = ""
             )
             CharacterMessage(
-                text = "오전 11시 29분 +6샷\n오전 10시 39분 +2샷",
+                text = dailyPoisonDetail.description,
                 tailPosition = MESSAGE_TAIL_START
             )
         }
