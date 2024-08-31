@@ -11,11 +11,19 @@ import com.taltal.poison.ui.mypage.MyPageScreen
 import com.taltal.poison.ui.onboard.OnBoardingScreen
 
 @Composable
-fun PoisonRootRoute(navController: NavHostController = rememberNavController()) {
+fun PoisonRootRoute(
+    isLoggedIn: Boolean,
+    navController: NavHostController = rememberNavController(),
+) {
     NavHost(
         modifier = Modifier,
         navController = navController,
-        startDestination = NavRoute.Home.direction,
+        startDestination =
+            if (isLoggedIn) {
+                NavRoute.Home.direction
+            } else {
+                NavRoute.Onboarding.direction
+            },
     ) {
         composable(NavRoute.Onboarding.direction) {
             OnBoardingScreen(

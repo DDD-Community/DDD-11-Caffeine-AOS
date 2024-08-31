@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -39,6 +40,7 @@ import com.taltal.poison.ui.theme.taltal_neutral_5
 import com.taltal.poison.ui.theme.taltal_neutral_60
 import com.taltal.poison.ui.theme.taltal_yellow_10
 import com.taltal.poison.ui.theme.taltal_yellow_60
+import com.taltal.poison.util.SharedPrefManager
 
 @Composable
 fun PurposeSection(
@@ -77,6 +79,10 @@ fun PurposeSection(
 
 @Composable
 fun GoalSection(viewModel: OnBoardingViewModel = hiltViewModel()) {
+    val context = LocalContext.current
+    val sharedPrefManager: SharedPrefManager by lazy {
+        SharedPrefManager(context)
+    }
     val selectedGoal = viewModel.chosenGoal.collectAsState()
 
     Column {
@@ -109,6 +115,7 @@ fun GoalSection(viewModel: OnBoardingViewModel = hiltViewModel()) {
             text = "완료",
             isEnabled = selectedGoal.value.isNotEmpty(),
             onClick = {
+                sharedPrefManager.setIsOnBoardingFinished()
                 viewModel.uploadUserData()
             }
         )
