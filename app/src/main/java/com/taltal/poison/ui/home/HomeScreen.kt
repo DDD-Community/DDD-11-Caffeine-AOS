@@ -80,7 +80,6 @@ fun HomeScreen() {
             Modifier
                 .navigationBarsPadding()
                 .statusBarsPadding(),
-        topBar = { HomeTopBar {} },
         bottomBar = { PoisonBottomBar(navController) },
     ) { innerPadding ->
         NavHost(
@@ -116,6 +115,7 @@ fun HomeLogScreen() {
                 .padding(horizontal = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        HomeTopBar(onClick = { /*TODO*/ })
         Spacer(
             modifier =
                 Modifier
@@ -146,7 +146,7 @@ fun HomeLogScreen() {
                     .fillMaxWidth()
                     .background(Color.White)
                     .height(290.dp),
-            painter = painterResource(id = R.drawable.ic_coffee_44),
+            painter = painterResource(id = R.drawable.main_poe),
             contentDescription = "",
         )
         Spacer(modifier = Modifier.height(20.dp))
