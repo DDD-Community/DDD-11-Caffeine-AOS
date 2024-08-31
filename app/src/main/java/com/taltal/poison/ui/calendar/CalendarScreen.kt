@@ -70,10 +70,10 @@ fun CalendarScreen(viewModel: CalendarViewModel = hiltViewModel()) {
             dayContent = { day ->
                 Day(
                     day = day,
-                    poisonState = calendar.calendarStateMap.getOrDefault(
+                    poisonState = (calendar as? Calendar.Success)?.calendarStateMap?.getOrDefault(
                         day.date,
                         PoisonState.None
-                    ),
+                    ) ?: PoisonState.None,
                     isSelected = selectedDay == day,
                     onClick = { clicked -> viewModel.getDailyPoison(clicked) }
                 )

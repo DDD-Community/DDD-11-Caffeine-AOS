@@ -26,17 +26,23 @@ class CalendarViewModel @Inject constructor() : ViewModel() {
     val currentMonth = MutableStateFlow(YearMonth.now())
     val selectedDay = MutableStateFlow(CalendarDay(LocalDate.now(), DayPosition.MonthDate))
     val dailyDetail = MutableStateFlow<DailyPoisonDetail>(DailyPoisonDetail.Loading)
-    val calendar = MutableStateFlow(getCalendarStateDummy())
+    val calendar = MutableStateFlow<Calendar>(Calendar.Loading)
 
     init {
-        fetchCalendar()
+        getCalendar()
         getDailyPoison(selectedDay.value)
     }
 
-    fun fetchCalendar() {
+    fun getCalendar() {
         viewModelScope.launch {
-            calendar.value = getCalendarStateDummy()
+            calendar.value = Calendar.Loading
+            calendar.value = fetchCalendar()
         }
+    }
+
+    private suspend fun fetchCalendar(): Calendar.Success {
+        // TODO API Call
+        return getCalendarStateDummy()
     }
 
     fun getDailyPoison(day: CalendarDay) {
@@ -48,7 +54,7 @@ class CalendarViewModel @Inject constructor() : ViewModel() {
     }
 
     private suspend fun fetchDailyPoison(day: CalendarDay): DailyPoisonDetail.Success {
-        // TODO 주석 --> 서버에서 가져올 데이터
+        // TODO API Call
         // 로직체크 API 연동전에 안함 --> 로컬에 저장할 필요 없을듯
         // 총 4잔
         val shot = 4
@@ -87,7 +93,7 @@ class CalendarViewModel @Inject constructor() : ViewModel() {
         })"
 
     private fun getDailyDetailRecord(records: List<PoisonRecord>) =
-        records.map {
+        records.joinToString("\n") {
             "${
                 it.dateTime.format(
                     DateTimeFormatter.ofPattern(
@@ -96,11 +102,11 @@ class CalendarViewModel @Inject constructor() : ViewModel() {
                     )
                 )
             } +${it.shot}샷"
-        }.joinToString("\n")
+        }
 
-    private fun getCalendarStateDummy(): CalendarState {
+    private fun getCalendarStateDummy(): Calendar.Success {
         val current = LocalDate.now()
-        return CalendarState(
+        return Calendar.Success(
             buildMap {
                 putAll(
                     arrayOf(
@@ -118,9 +124,10 @@ class CalendarViewModel @Inject constructor() : ViewModel() {
 }
 
 @Immutable
-data class CalendarState(
-    val calendarStateMap: Map<LocalDate, PoisonState>
-)
+sealed interface Calendar {
+    data class Success(val calendarStateMap: Map<LocalDate, PoisonState>) : Calendar
+    data object Loading : Calendar
+}
 
 data class PoisonRecord(
     val dateTime: LocalDateTime,
