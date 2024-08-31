@@ -40,11 +40,6 @@ class CalendarViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    private suspend fun fetchCalendar(): Calendar.Success {
-        // TODO API Call
-        return getCalendarStateDummy()
-    }
-
     fun getDailyPoison(day: CalendarDay) {
         viewModelScope.launch {
             selectedDay.value = day
@@ -53,24 +48,30 @@ class CalendarViewModel @Inject constructor() : ViewModel() {
         }
     }
 
+    private suspend fun fetchCalendar(): Calendar.Success {
+        // TODO API Call
+        return getCalendarStateDummy()
+    }
+
+
     private suspend fun fetchDailyPoison(day: CalendarDay): DailyPoisonDetail.Success {
         // TODO API Call
-        // 로직체크 API 연동전에 안함 --> 로컬에 저장할 필요 없을듯
-        // 총 4잔
-        val shot = 4
-        // PoisonState
-        val poisonState = PoisonState.Success
-        // 기록 LocalDateTime, 2잔
-        val records =
-            listOf(PoisonRecord(LocalDateTime.now(), 2), PoisonRecord(LocalDateTime.now(), 2))
-        return DailyPoisonDetail.Success(
-            title = getDailyDetailTitle(day),
-            subTitle = getDailyDetailSubTitle(poisonState, shot),
-            imageResId = poisonState.getDailyCoffeeImageResId(),
-            description = getDailyDetailRecord(records),
-            poisonState = poisonState
-        )
+        val (shot, poisonState, records) = getDailyDetailDummy()
+        return mapToDailyPoison(day, poisonState, shot, records)
     }
+
+    private fun mapToDailyPoison(
+        day: CalendarDay,
+        poisonState: PoisonState,
+        shot: Int,
+        records: List<PoisonRecord>
+    ) = DailyPoisonDetail.Success(
+        title = getDailyDetailTitle(day),
+        subTitle = getDailyDetailSubTitle(poisonState, shot),
+        imageResId = poisonState.getDailyCoffeeImageResId(),
+        description = getDailyDetailRecord(records),
+        poisonState = poisonState
+    )
 
     private fun getDailyDetailSubTitle(poisonState: PoisonState, shot: Int) =
         buildAnnotatedString {
@@ -120,6 +121,18 @@ class CalendarViewModel @Inject constructor() : ViewModel() {
                 )
             }
         )
+    }
+
+    private fun getDailyDetailDummy(): Triple<Int, PoisonState, List<PoisonRecord>> {
+        // 로직체크 API 연동전에 안함 --> 로컬에 저장할 필요 없을듯
+        // 총 4잔
+        val shot = 4
+        // PoisonState
+        val poisonState = PoisonState.Success
+        // 기록 LocalDateTime, 2잔
+        val records =
+            listOf(PoisonRecord(LocalDateTime.now(), 2), PoisonRecord(LocalDateTime.now(), 2))
+        return Triple(shot, poisonState, records)
     }
 }
 
