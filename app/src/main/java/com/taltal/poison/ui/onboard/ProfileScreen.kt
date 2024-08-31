@@ -15,6 +15,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.taltal.poison.ui.designsystem.BirthdayVisualTransformation
 import com.taltal.poison.ui.designsystem.ConfirmButton
 import com.taltal.poison.ui.designsystem.OptionSelection
 import com.taltal.poison.ui.designsystem.RoundedTextField
@@ -50,10 +51,11 @@ fun ProfileSection(viewModel: OnBoardingViewModel = hiltViewModel()) {
             modifier = Modifier.padding(start = 28.dp, top = 24.dp, bottom = 8.dp)
         )
         RoundedTextField(
-            textHint = "YYYYMMDD",
+            textHint = "YYYY.MM.DD",
             modifier = Modifier.padding(horizontal = 16.dp),
             keyboardType = KeyboardType.Number,
-            onValueChanged = { viewModel.updateBirth(it) }
+            onValueChanged = { viewModel.updateBirth(it) },
+            visualTransformation = BirthdayVisualTransformation()
         )
         Row(modifier = Modifier.padding(16.dp)) {
             Column(modifier = Modifier.weight(1f)) {

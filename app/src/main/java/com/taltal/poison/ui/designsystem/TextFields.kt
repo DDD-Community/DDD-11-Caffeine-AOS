@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.taltal.poison.ui.theme.body_16rg
@@ -55,7 +56,8 @@ fun RoundedTextField(
     needClearButton: Boolean = false,
     maxLine: Int = 1,
     modifier: Modifier,
-    keyboardType: KeyboardType = KeyboardType.Text
+    keyboardType: KeyboardType = KeyboardType.Text,
+    visualTransformation: VisualTransformation = VisualTransformation.None
 ) {
     var textInput by remember { mutableStateOf("") }
     var isError by remember { mutableStateOf(false) }
@@ -77,6 +79,7 @@ fun RoundedTextField(
                     color = taltal_neutral_50
                 )
             },
+            visualTransformation = visualTransformation,
             modifier = Modifier
                 .fillMaxWidth()
                 .border(
