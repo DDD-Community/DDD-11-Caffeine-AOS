@@ -14,7 +14,8 @@ class HomeViewModel @Inject constructor() : ViewModel() {
             currentPoison = 1,
             purposePoison = 4,
             description = "카페인 과다섭취는 두통, 불면증, 행동 불안,\n혈압 상승 등을 일으킬 수 있대요!",
-            imageUrl = ""
+            imageUrl = "",
+            hasPadding = false,
         )
     )
 
@@ -54,4 +55,5 @@ data class HomeUiState(
     val purposePoison: Int,
     val description: String,
     val imageUrl: String,
+    val hasPadding: Boolean,
 )

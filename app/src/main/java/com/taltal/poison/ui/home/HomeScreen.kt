@@ -40,7 +40,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -147,7 +146,7 @@ fun HomeLogScreen(viewModel: HomeViewModel = hiltViewModel()) {
             Modifier
                 .fillMaxWidth()
                 .background(Color.White)
-                .height(20.dp),
+                .height(if (uiState.hasPadding) 100.dp else 20.dp),
         )
         AsyncImage(
             modifier =
@@ -162,7 +161,11 @@ fun HomeLogScreen(viewModel: HomeViewModel = hiltViewModel()) {
             placeholder = painterResource(R.drawable.happy_poe),
             contentDescription = "Poison Status Image",
         )
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(
+            modifier = Modifier
+                .weight(1f)
+                .background(if (uiState.hasPadding) Color(0xFF6F5338F2) else Color.White)
+        )
         PoisonAddButton(text = "+ 커피 한 샷", onClick = { viewModel.drink(true) })
         Spacer(modifier = Modifier.height(36.dp))
     }
