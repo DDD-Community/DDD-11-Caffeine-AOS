@@ -50,6 +50,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RoundedTextField(
+    text: String = "",
     textHint: String = "",
     onValueChanged: (String) -> Unit = {},
     checkError: (String) -> Boolean = { false },
@@ -59,7 +60,7 @@ fun RoundedTextField(
     keyboardType: KeyboardType = KeyboardType.Text,
     visualTransformation: VisualTransformation = VisualTransformation.None
 ) {
-    var textInput by remember { mutableStateOf("") }
+    var textInput by remember { mutableStateOf(text) }
     var isError by remember { mutableStateOf(false) }
     val keyboardController = LocalSoftwareKeyboardController.current
     val scope = rememberCoroutineScope()
