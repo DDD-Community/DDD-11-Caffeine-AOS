@@ -9,31 +9,28 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kizitonwose.calendar.compose.HorizontalCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
-import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.nextMonth
 import com.kizitonwose.calendar.core.previousMonth
 import com.taltal.poison.R
+import com.taltal.poison.ui.calendar.model.PoisonState
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
-import java.time.YearMonth
 
 @Composable
-fun CalendarScreen(adjacentMonths: Long = 12) {
-    val currentMonth = remember { YearMonth.now() }
-    val startMonth = remember { currentMonth.minusMonths(adjacentMonths) }
-    val endMonth = remember { currentMonth.plusMonths(adjacentMonths) }
-    var selection by remember { mutableStateOf<CalendarDay?>(null) }
-    val daysOfWeek = remember { DayOfWeek.entries }
+fun CalendarScreen(viewModel: CalendarViewModel = hiltViewModel()) {
+    val currentMonth by viewModel.currentMonth.collectAsStateWithLifecycle()
+    val selectedDay by viewModel.selectedDay.collectAsStateWithLifecycle()
+    val calendar by viewModel.calendar.collectAsStateWithLifecycle()
+    val dailyDetail by viewModel.dailyDetail.collectAsStateWithLifecycle()
 
     Column(
         modifier = Modifier
@@ -41,10 +38,10 @@ fun CalendarScreen(adjacentMonths: Long = 12) {
             .background(Color.White),
     ) {
         val state = rememberCalendarState(
-            startMonth = startMonth,
-            endMonth = endMonth,
+            startMonth = currentMonth.minusMonths(12),
+            endMonth = currentMonth,
             firstVisibleMonth = currentMonth,
-            firstDayOfWeek = daysOfWeek.first(),
+            firstDayOfWeek = DayOfWeek.entries.first(),
         )
         val coroutineScope = rememberCoroutineScope()
         val visibleMonth = rememberFirstMostVisibleMonth(state, viewportPercent = 90f)
@@ -71,26 +68,29 @@ fun CalendarScreen(adjacentMonths: Long = 12) {
             modifier = Modifier.padding(horizontal = 20.dp),
             state = state,
             dayContent = { day ->
-                val poisonState = remember { PoisonState.entries.random() }
                 Day(
                     day = day,
-                    poisonState = poisonState,
-                    isSelected = selection?.equals(day) == true,
-                    onClick = { clicked -> selection = clicked }
+                    poisonState = (calendar as? Calendar.Success)?.calendarStateMap?.getOrDefault(
+                        day.date,
+                        PoisonState.None
+                    ) ?: PoisonState.None,
+                    isSelected = selectedDay == day,
+                    onClick = { clicked -> viewModel.getDailyPoison(clicked) }
                 )
             },
             monthHeader = {
-                MonthHeader(daysOfWeek = daysOfWeek)
+                MonthHeader(daysOfWeek = DayOfWeek.entries)
             },
         )
         Spacer(modifier = Modifier.height(20.dp))
-        val poisonState = PoisonState.entries.random()
-        if (poisonState != PoisonState.None) {
+        if (dailyDetail is DailyPoisonDetail.Success
+            && (dailyDetail as? DailyPoisonDetail.Success)?.poisonState != PoisonState.None
+        ) {
             DayDetail(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp),
-                poisonState = PoisonState.entries.random()
+                dailyPoisonDetail = dailyDetail as DailyPoisonDetail.Success,
             )
         }
     }

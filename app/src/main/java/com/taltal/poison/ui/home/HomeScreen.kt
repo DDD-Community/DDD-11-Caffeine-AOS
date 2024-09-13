@@ -1,5 +1,6 @@
 package com.taltal.poison.ui.home
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -29,19 +30,25 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
@@ -49,6 +56,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.taltal.poison.R
 import com.taltal.poison.ui.calendar.CalendarScreen
 import com.taltal.poison.ui.mypage.MyPageScreen
@@ -59,9 +72,9 @@ import com.taltal.poison.ui.theme.taltal_neutral_5
 import com.taltal.poison.ui.theme.taltal_neutral_50
 import com.taltal.poison.ui.theme.taltal_neutral_60
 import com.taltal.poison.ui.theme.taltal_neutral_90
-import com.taltal.poison.ui.theme.taltal_red_60
-import com.taltal.poison.ui.theme.taltal_yellow_50
+import com.taltal.poison.ui.theme.taltal_red_50
 import com.taltal.poison.ui.theme.taltal_yellow_60
+import com.taltal.poison.ui.theme.taltal_yellow_70
 import com.taltal.poison.ui.theme.title_12bd
 import com.taltal.poison.ui.theme.title_16sb
 import com.taltal.poison.ui.theme.title_24bd
@@ -84,11 +97,12 @@ fun HomeScreen() {
     ) { innerPadding ->
         NavHost(
             modifier =
-                Modifier
-                    .padding(
-                        // 탭 스크린 내부 UI 패딩 필요
-                        bottom = innerPadding.calculateBottomPadding(),
-                    ),
+            Modifier
+                .padding(
+                    // 탭 스크린 내부 UI 패딩 필요
+                    bottom = innerPadding.calculateBottomPadding(),
+                )
+                .background(Color.White),
             navController = navController,
             startDestination = BottomNavItem.Home.screenRoute,
         ) {
@@ -106,51 +120,52 @@ fun HomeScreen() {
 }
 
 @Composable
-fun HomeLogScreen() {
-    Column(
-        modifier =
-            Modifier
-                .background(Color.White)
-                .fillMaxSize()
-                .padding(horizontal = 20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        HomeTopBar(onClick = { /*TODO*/ })
+fun HomeLogScreen(viewModel: HomeViewModel = hiltViewModel()) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Spacer(
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .background(Color.White)
-                    .height(12.dp),
+            Modifier
+                .fillMaxWidth()
+                .background(Color.White)
+                .height(12.dp),
         )
         TodayPoisonStatus(
-            currentPoison = 6,
-            poisonPurpose = 4,
-            poisonUnit = "샷",
-            description = "카페인 과다섭취는 두통, 불면증, 행동 불안,\n혈압 상승 등을 일으킬 수 있대요!",
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .background(Color.White),
+            Modifier
+                .fillMaxWidth()
+                .background(Color.White),
+            currentPoison = uiState.currentPoison,
+            poisonPurpose = uiState.purposePoison,
+            description = uiState.description,
         )
         Spacer(
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .background(Color.White)
-                    .height(20.dp),
+            Modifier
+                .fillMaxWidth()
+                .background(Color.White)
+                .height(if (uiState.hasPadding) 100.dp else 20.dp),
         )
-        Image(
+        AsyncImage(
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .background(Color.White)
-                    .height(290.dp),
-            painter = painterResource(id = R.drawable.main_poe),
-            contentDescription = "",
+            Modifier
+                .fillMaxWidth()
+                .background(Color.White)
+                .height(290.dp),
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(uiState.imageUrl)
+                .crossfade(true)
+                .build(),
+            placeholder = painterResource(R.drawable.happy_poe),
+            contentDescription = "Poison Status Image",
         )
-        Spacer(modifier = Modifier.height(20.dp))
-        PoisonAddButton(text = "+ 커피 한 샷", onClick = { /*TODO*/ })
+        Spacer(
+            modifier = Modifier
+                .weight(1f)
+                .background(if (uiState.hasPadding) Color(0xFF6F5338F2) else Color.White)
+        )
+        PoisonAddButton(text = "+ 커피 한 샷", onClick = { viewModel.drink(true) })
         Spacer(modifier = Modifier.height(36.dp))
     }
 }
@@ -159,10 +174,10 @@ fun HomeLogScreen() {
 private fun HomeTopBar(onClick: () -> Unit) {
     Row(
         modifier =
-            Modifier
-                .fillMaxWidth()
-                .height(52.dp)
-                .padding(end = 16.dp),
+        Modifier
+            .fillMaxWidth()
+            .height(52.dp)
+            .padding(end = 16.dp),
         horizontalArrangement = Arrangement.End,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -178,11 +193,11 @@ fun PoisonBottomBar(navController: NavHostController) {
     Divider(color = taltal_neutral_5, modifier = Modifier.zIndex(3f))
     Row(
         modifier =
-            Modifier
-                .background(Color.White)
-                .fillMaxWidth()
-                .height(80.dp)
-                .zIndex(2f),
+        Modifier
+            .background(Color.White)
+            .fillMaxWidth()
+            .height(80.dp)
+            .zIndex(2f),
         verticalAlignment = Alignment.Top,
     ) {
         BottomNavButton(
@@ -290,10 +305,36 @@ private fun PoisonTypeButton(onClick: () -> Unit) {
 private fun TodayPoisonStatus(
     currentPoison: Int,
     poisonPurpose: Int,
-    poisonUnit: String,
     description: String,
     modifier: Modifier = Modifier,
 ) {
+
+    fun getProgress(currentPoison: Int, poisonPurpose: Int): Float {
+        return if (currentPoison > poisonPurpose) {
+            (currentPoison - poisonPurpose).toFloat() / poisonPurpose.toFloat()
+        } else {
+            currentPoison.toFloat() / poisonPurpose.toFloat()
+        }
+    }
+
+    fun getProgressBackgroundColor(currentPoison: Int, poisonPurpose: Int): Color {
+        val criteria = currentPoison.toFloat() / poisonPurpose.toFloat()
+        return when {
+            criteria <= 1 -> taltal_neutral_5
+            criteria < 2 -> taltal_yellow_60
+            else -> Color.Black
+        }
+    }
+
+    fun getProgressColor(currentPoison: Int, poisonPurpose: Int): Color {
+        val criteria = currentPoison.toFloat() / poisonPurpose.toFloat()
+        return when {
+            criteria <= 1 -> taltal_yellow_60
+            criteria < 2 -> taltal_yellow_70
+            else -> Color.Black
+        }
+    }
+
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -301,13 +342,13 @@ private fun TodayPoisonStatus(
         TodayPoisonStatus(
             currentPoison = currentPoison,
             poisonPurpose = poisonPurpose,
-            poisonUnit = poisonUnit,
         )
         Spacer(modifier = Modifier.height(12.dp))
         TodayPoisonStatusProgressIndicator(
-            progress = 0.5f,
-            progressColor = taltal_yellow_50,
-            backgroundColor = taltal_neutral_5,
+            modifier = Modifier.padding(horizontal = 20.dp),
+            progress = getProgress(currentPoison, poisonPurpose),
+            progressColor = getProgressColor(currentPoison, poisonPurpose),
+            backgroundColor = getProgressBackgroundColor(currentPoison, poisonPurpose),
         )
         Spacer(modifier = Modifier.height(12.dp))
         TodayPoisonStatusDescription(description)
@@ -318,23 +359,22 @@ private fun TodayPoisonStatus(
 private fun TodayPoisonStatus(
     currentPoison: Int,
     poisonPurpose: Int,
-    poisonUnit: String,
 ) {
-    fun getCurrentPoisonColor(): Color = if (currentPoison > poisonPurpose) taltal_red_60 else taltal_yellow_60
+    fun getCurrentPoisonColor(): Color =
+        if (currentPoison > poisonPurpose) taltal_red_50 else taltal_yellow_60
 
     Row(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(text = "오늘 섭취량", color = Color.Black, style = title_16sb)
+        Text(text = "오늘 섭취량", style = title_16sb.copy(color = Color.Black))
         Spacer(modifier = Modifier.width(12.dp))
         Text(
             text = currentPoison.toString(),
-            color = getCurrentPoisonColor(),
-            style = title_24bd,
+            style = title_24bd.copy(color = getCurrentPoisonColor()),
         )
         Spacer(modifier = Modifier.width(4.dp))
-        Text(text = "/ $poisonPurpose$poisonUnit", color = taltal_neutral_60)
+        Text(text = "/ ${poisonPurpose}샷", color = taltal_neutral_60)
     }
 }
 
@@ -343,23 +383,25 @@ private fun TodayPoisonStatusProgressIndicator(
     progress: Float,
     progressColor: Color,
     backgroundColor: Color,
+    modifier: Modifier = Modifier
 ) {
-    Box {
+    val animatedProgress by animateFloatAsState(targetValue = progress)
+
+    Box(modifier = modifier) {
         LinearProgressIndicator(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .height(16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(16.dp),
             progress = { 100f },
             color = backgroundColor,
             strokeCap = StrokeCap.Round,
         )
         LinearProgressIndicator(
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .height(16.dp),
-            progress = { progress },
+            Modifier
+                .fillMaxWidth()
+                .height(16.dp),
+            progress = { animatedProgress },
             color = progressColor,
             trackColor = Color.Transparent,
             strokeCap = StrokeCap.Round,
@@ -383,25 +425,50 @@ private fun PoisonAddButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    ElevatedCard(
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 8.dp),
-        modifier = modifier,
-        onClick = onClick,
-    ) {
-        Column(
-            modifier =
+    val lottieComposition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.btn_main_pressed))
+    var isPlaying by remember { mutableStateOf(false) }
+    val progress by animateLottieCompositionAsState(
+        composition = lottieComposition,
+        isPlaying = isPlaying
+    )
+
+    LaunchedEffect(key1 = progress) {
+        if (!isPlaying) return@LaunchedEffect
+        if (progress == 0f) isPlaying = true
+        if (progress == 1f) isPlaying = false
+    }
+
+    Box {
+        ElevatedCard(
+            elevation = CardDefaults.elevatedCardElevation(defaultElevation = 8.dp),
+            modifier = modifier.align(Alignment.Center),
+            onClick = {
+                isPlaying = true
+                onClick.invoke()
+            },
+        ) {
+            Column(
+                modifier =
                 Modifier
                     .background(Color.White)
                     .padding(vertical = 12.dp, horizontal = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Image(
-                modifier = Modifier.height(44.dp),
-                painter = painterResource(id = R.drawable.ic_coffee_44),
-                contentDescription = "",
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = text, style = title_16sb)
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Image(
+                    modifier = Modifier.height(44.dp),
+                    painter = painterResource(id = R.drawable.ic_coffee_44),
+                    contentDescription = "",
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(text = text, style = title_16sb.copy(color = taltal_neutral_90))
+            }
         }
+        LottieAnimation(
+            modifier = Modifier
+                .height(130.dp)
+                .align(Alignment.Center),
+            composition = lottieComposition,
+            progress = { progress }
+        )
     }
 }
