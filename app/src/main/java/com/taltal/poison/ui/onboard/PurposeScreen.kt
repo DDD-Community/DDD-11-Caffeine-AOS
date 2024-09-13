@@ -43,28 +43,27 @@ import com.taltal.poison.ui.theme.taltal_yellow_60
 import com.taltal.poison.util.SharedPrefManager
 
 @Composable
-fun PurposeSection(
-    viewModel: OnBoardingViewModel = hiltViewModel()
-) {
+fun PurposeSection(viewModel: OnBoardingViewModel = hiltViewModel()) {
     val purpose = viewModel.chosenPurpose.collectAsState()
     Column {
         DescriptionCharacter(
             message = messageList[viewModel.pagerState.currentPage],
             poeType = HAPPY_POE,
-            modifier = Modifier
-                .padding(horizontal = 28.dp)
-                .padding(top = 16.dp, bottom = 12.dp)
+            modifier =
+                Modifier
+                    .padding(horizontal = 28.dp)
+                    .padding(top = 16.dp, bottom = 12.dp),
         )
         Text(
             text = "목표 설정",
             style = body_14md,
-            modifier = Modifier.padding(start = 28.dp, bottom = 8.dp)
+            modifier = Modifier.padding(start = 28.dp, bottom = 8.dp),
         )
         OptionSelection(
             currentOption = purpose.value,
             options = listOf("카페인 줄이기", "카페인 기록"),
             updateSelectedOption = { viewModel.updateTargetPurpose(it) },
-            modifier = Modifier.padding(horizontal = 16.dp)
+            modifier = Modifier.padding(horizontal = 16.dp),
         )
         Spacer(modifier = Modifier.weight(1f))
         ConfirmButton(
@@ -72,7 +71,7 @@ fun PurposeSection(
             isEnabled = purpose.value.isNotEmpty(),
             onClick = {
                 viewModel.moveToNextPage()
-            }
+            },
         )
     }
 }
@@ -89,16 +88,18 @@ fun GoalSection(viewModel: OnBoardingViewModel = hiltViewModel()) {
         DescriptionCharacter(
             message = messageList[viewModel.pagerState.currentPage],
             poeType = STAR_POE,
-            modifier = Modifier
-                .padding(horizontal = 28.dp)
-                .padding(top = 16.dp, bottom = 12.dp)
+            modifier =
+                Modifier
+                    .padding(horizontal = 28.dp)
+                    .padding(top = 16.dp, bottom = 12.dp),
         )
         NumberPickerComponent(
             title = "매일 단위",
             description = "하루 최대 샷 수",
             isSelected = selectedGoal.value == "매일 단위",
             updateGoal = { viewModel.updateGoal(it) },
-            modifier = Modifier.padding(horizontal = 16.dp)
+            updateGoalNumber = { viewModel.updateDailyGoalNumber(it) },
+            modifier = Modifier.padding(horizontal = 16.dp),
         )
 
         NumberPickerComponent(
@@ -106,18 +107,19 @@ fun GoalSection(viewModel: OnBoardingViewModel = hiltViewModel()) {
             description = "일주일 최대 샷 수",
             isSelected = selectedGoal.value == "일주일 단위",
             updateGoal = { viewModel.updateGoal(it) },
-            modifier = Modifier
-                .padding(top = 16.dp)
-                .padding(horizontal = 16.dp)
+            updateGoalNumber = { viewModel.updateWeeklyGoalNumber(it) },
+            modifier =
+                Modifier
+                    .padding(top = 16.dp)
+                    .padding(horizontal = 16.dp),
         )
         Spacer(modifier = Modifier.weight(1f))
         ConfirmButton(
             text = "완료",
             isEnabled = selectedGoal.value.isNotEmpty(),
             onClick = {
-                sharedPrefManager.setIsOnBoardingFinished()
-                viewModel.uploadUserData()
-            }
+                viewModel.uploadUserData(sharedPrefManager)
+            },
         )
     }
 }
@@ -128,64 +130,69 @@ fun NumberPickerComponent(
     title: String,
     description: String,
     isSelected: Boolean,
-    updateGoal: (String) -> Unit = {}
+    updateGoal: (String) -> Unit = {},
+    updateGoalNumber: (Int) -> Unit = {},
 ) {
     var number by remember { mutableIntStateOf(2) }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
-            .border(
-                1.dp,
-                if (isSelected) taltal_yellow_60 else taltal_neutral_10,
-                shape = RoundedCornerShape(12.dp)
-            )
-            .clickable { updateGoal(title) }
+        modifier =
+            modifier
+                .border(
+                    1.dp,
+                    if (isSelected) taltal_yellow_60 else taltal_neutral_10,
+                    shape = RoundedCornerShape(12.dp),
+                ).clickable { updateGoal(title) },
     ) {
         Text(
             text = title,
             style = body_16md,
             color = taltal_neutral_60,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(40.dp)
-                .background(
-                    color = if (isSelected) taltal_yellow_10 else taltal_neutral_5,
-                    shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
-                )
-                .border(
-                    1.dp,
-                    color = if (isSelected) taltal_yellow_60 else taltal_neutral_10,
-                    shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
-                )
-                .wrapContentHeight(align = Alignment.CenterVertically),
-            textAlign = TextAlign.Center
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(40.dp)
+                    .background(
+                        color = if (isSelected) taltal_yellow_10 else taltal_neutral_5,
+                        shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
+                    ).border(
+                        1.dp,
+                        color = if (isSelected) taltal_yellow_60 else taltal_neutral_10,
+                        shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
+                    ).wrapContentHeight(align = Alignment.CenterVertically),
+            textAlign = TextAlign.Center,
         )
         Text(
             text = description,
             style = body_14md,
             color = taltal_neutral_60,
-            modifier = Modifier.padding(top = 12.dp, bottom = 8.dp)
+            modifier = Modifier.padding(top = 12.dp, bottom = 8.dp),
         )
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .padding(bottom = 12.dp)
-                .border(
-                    1.dp,
-                    taltal_neutral_10,
-                    shape = RoundedCornerShape(12.dp)
-                )
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 12.dp)
+                    .border(
+                        1.dp,
+                        taltal_neutral_10,
+                        shape = RoundedCornerShape(12.dp),
+                    ),
         ) {
             IconButton(
-                onClick = { if (number > 0) number-- },
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(RoundedCornerShape(8.dp))
+                onClick = {
+                    if (number > 0) number--
+                    updateGoalNumber(number)
+                },
+                modifier =
+                    Modifier
+                        .size(48.dp)
+                        .clip(RoundedCornerShape(8.dp)),
             ) {
                 Text("-", fontSize = 24.sp, color = Color(0xFF888888))
             }
@@ -194,17 +201,22 @@ fun NumberPickerComponent(
                 text = "$number",
                 fontSize = 24.sp,
                 color = Color.Black,
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .padding(vertical = 8.dp, horizontal = 32.dp),
-                textAlign = TextAlign.Center
+                modifier =
+                    Modifier
+                        .padding(horizontal = 16.dp)
+                        .padding(vertical = 8.dp, horizontal = 32.dp),
+                textAlign = TextAlign.Center,
             )
 
             IconButton(
-                onClick = { number++ },
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(RoundedCornerShape(8.dp))
+                onClick = {
+                    number++
+                    updateGoalNumber(number)
+                },
+                modifier =
+                    Modifier
+                        .size(48.dp)
+                        .clip(RoundedCornerShape(8.dp)),
             ) {
                 Text("+", fontSize = 24.sp, color = Color(0xFF888888))
             }
@@ -225,7 +237,7 @@ private fun NumberPickerComponentPreview() {
         title = "매일 단위",
         description = "하루 최대 샷 수",
         isSelected = false,
-        modifier = Modifier.padding(8.dp)
+        modifier = Modifier.padding(8.dp),
     )
 }
 
@@ -236,7 +248,7 @@ private fun NumberPickerComponentPreview2() {
         title = "매일 단위",
         description = "하루 최대 샷 수",
         isSelected = true,
-        modifier = Modifier.padding(8.dp)
+        modifier = Modifier.padding(8.dp),
     )
 }
 

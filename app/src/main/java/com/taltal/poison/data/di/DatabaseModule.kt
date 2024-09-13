@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.taltal.poison.data.AppDatabase
 import com.taltal.poison.data.api.CoffeeLogDao
+import com.taltal.poison.util.SharedPrefManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,5 +28,11 @@ object DatabaseModule {
     @Provides
     fun provideCoffeeIntakeDao(database: AppDatabase): CoffeeLogDao {
         return database.coffeeLogDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideSharedPrefManager(context: Context): SharedPrefManager {
+        return SharedPrefManager(context)
     }
 }
