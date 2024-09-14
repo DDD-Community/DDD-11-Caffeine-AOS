@@ -3,7 +3,6 @@ package com.taltal.poison.ui.home
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -146,61 +145,38 @@ fun HomeLogScreen(viewModel: HomeViewModel = hiltViewModel()) {
         if (progress == 1f) isPlaying = false
     }
 
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        // 추후 선택형 헤더로 교체
-        Spacer(
-            modifier =
-            Modifier
-                .fillMaxWidth()
-                .background(Color.White)
-                .height(56.dp),
-        )
-        Spacer(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .background(Color.White)
-                    .height(12.dp),
-        )
+    Box(contentAlignment = Alignment.BottomCenter) {
+        // TODO: header
         TodayPoisonStatus(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .background(Color.White),
+                    .background(Color.White)
+                    .align(Alignment.TopCenter)
+                    .padding(top = 68.dp),
             currentPoison = uiState.currentPoison,
             poisonPurpose = uiState.purposePoison,
             description = uiState.description,
         )
-        Spacer(
+
+        LottieAnimation(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .background(Color.White)
-                    .height( 20.dp),
+                    .fillMaxHeight()
+                    .padding(bottom = 36.dp)
+                    .align(Alignment.BottomCenter),
+            composition = lottieComposition,
+            progress = { progress },
         )
-        Box(
-            modifier = Modifier.fillMaxHeight(),
-            contentAlignment = Alignment.BottomCenter,
-        ) {
-            LottieAnimation(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight()
-                        .padding(bottom = 36.dp)
-                        .align(Alignment.BottomCenter),
-                composition = lottieComposition,
-                progress = { progress },
-            )
-            PoisonAddButton(
-                modifier = Modifier.padding(bottom = 36.dp),
-                text = "+ 커피 한 샷",
-                onClick = {
-                    isPlaying = true
-                    viewModel.drink()
-                },
-            )
-        }
+        PoisonAddButton(
+            modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 36.dp),
+            text = "+ 커피 한 샷",
+            onClick = {
+                isPlaying = true
+                viewModel.drink()
+            },
+        )
     }
 }
 

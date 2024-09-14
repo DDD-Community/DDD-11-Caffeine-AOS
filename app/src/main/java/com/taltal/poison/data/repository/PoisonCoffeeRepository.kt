@@ -72,4 +72,14 @@ class PoisonCoffeeRepository
                 height = height,
                 weight = weight,
             ).result
+
+        suspend fun enter() = poisonApi.enter(userId).result
+
+        suspend fun getDailyShotInformation(
+            year: Int,
+            month: Int,
+            day: Int,
+        ) = poisonApi.getDailyShotInformation(userId, year, month, day).result
+
+        suspend fun getCalendarState() = poisonApi.getCalendarState(userId).result
     }

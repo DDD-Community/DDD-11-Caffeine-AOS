@@ -56,15 +56,15 @@ import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.Locale
 
-
 @Composable
 fun CalendarHeader() {
     Row(
-        modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .height(56.dp),
+        modifier =
+            Modifier
+                .padding(horizontal = 16.dp)
+                .height(56.dp),
         horizontalArrangement = Arrangement.Start,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(text = "캘린더", style = title_18sb.copy(color = taltal_neutral_90))
     }
@@ -89,20 +89,21 @@ fun Day(
     day: CalendarDay,
     poisonState: PoisonState,
     isSelected: Boolean,
-    onClick: (CalendarDay) -> Unit
+    onClick: (CalendarDay) -> Unit,
 ) {
     if (day.position == DayPosition.MonthDate) {
         Box(
-            modifier = Modifier
-                .aspectRatio(1f)
-                .padding(6.dp)
-                .clickable { onClick(day) },
+            modifier =
+                Modifier
+                    .aspectRatio(1f)
+                    .padding(6.dp)
+                    .clickable { onClick(day) },
             contentAlignment = Alignment.Center,
         ) {
             if (poisonState != PoisonState.None) {
                 Image(
                     imageVector = ImageVector.vectorResource(id = poisonState.getCalendarDayBackgrountResId()),
-                    contentDescription = ""
+                    contentDescription = "",
                 )
             }
             if (poisonState in listOf(PoisonState.Empty, PoisonState.None)) {
@@ -114,10 +115,11 @@ fun Day(
             }
             if (isSelected) {
                 Canvas(
-                    modifier = Modifier
-                        .padding(top = 2.dp, end = 2.dp)
-                        .align(Alignment.TopEnd)
-                        .size(6.dp)
+                    modifier =
+                        Modifier
+                            .padding(top = 2.dp, end = 2.dp)
+                            .align(Alignment.TopEnd)
+                            .size(6.dp),
                 ) {
                     drawCircle(color = taltal_yellow_70)
                 }
@@ -138,7 +140,7 @@ fun CalendarTitle(
     Row(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
+        horizontalArrangement = Arrangement.Center,
     ) {
         Image(
             modifier = Modifier.clickable { goToPrevious.invoke() },
@@ -155,7 +157,7 @@ fun CalendarTitle(
         Image(
             modifier = Modifier.clickable { goToNext.invoke() },
             painter = painterResource(id = arrowRightImageResId),
-            contentDescription = "다음 달로 이동"
+            contentDescription = "다음 달로 이동",
         )
     }
 }
@@ -166,25 +168,25 @@ fun DayDetail(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .border(
-                width = 1.dp,
-                color = taltal_neutral_10,
-                shape = RoundedCornerShape(12.dp, 16.dp, 16.dp, 16.dp)
-            )
-            .padding(top = 12.dp, bottom = 16.dp),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .border(
+                    width = 1.dp,
+                    color = taltal_neutral_10,
+                    shape = RoundedCornerShape(12.dp, 16.dp, 16.dp, 16.dp),
+                ).padding(top = 12.dp, bottom = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            modifier = Modifier
-                .background(
-                    shape = RoundedCornerShape(4.dp, 16.dp, 4.dp, 16.dp),
-                    color = taltal_neutral_5
-                )
-                .padding(horizontal = 16.dp, vertical = 4.dp),
+            modifier =
+                Modifier
+                    .background(
+                        shape = RoundedCornerShape(4.dp, 16.dp, 4.dp, 16.dp),
+                        color = taltal_neutral_5,
+                    ).padding(horizontal = 16.dp, vertical = 4.dp),
             text = dailyPoisonDetail.title,
-            style = title_14bd.copy(color = taltal_neutral_80)
+            style = title_14bd.copy(color = taltal_neutral_80),
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = dailyPoisonDetail.subTitle, style = title_20sb.copy(color = taltal_neutral_90))
@@ -193,12 +195,14 @@ fun DayDetail(
             Image(
                 modifier = Modifier.size(60.dp),
                 painter = painterResource(id = dailyPoisonDetail.imageResId),
-                contentDescription = ""
+                contentDescription = "",
             )
-            CharacterMessage(
-                text = dailyPoisonDetail.description,
-                tailPosition = MESSAGE_TAIL_START
-            )
+            if (dailyPoisonDetail.poisonState == PoisonState.Success || dailyPoisonDetail.poisonState == PoisonState.Fail) {
+                CharacterMessage(
+                    text = dailyPoisonDetail.description,
+                    tailPosition = MESSAGE_TAIL_START,
+                )
+            }
         }
     }
 }
@@ -217,17 +221,17 @@ fun rememberFirstMostVisibleMonth(
     return visibleMonth.value
 }
 
-private fun CalendarLayoutInfo.firstMostVisibleMonth(viewportPercent: Float = 50f): CalendarMonth? {
-    return if (visibleMonthsInfo.isEmpty()) {
+private fun CalendarLayoutInfo.firstMostVisibleMonth(viewportPercent: Float = 50f): CalendarMonth? =
+    if (visibleMonthsInfo.isEmpty()) {
         null
     } else {
         val viewportSize = (viewportEndOffset + viewportStartOffset) * viewportPercent / 100f
-        visibleMonthsInfo.firstOrNull { itemInfo ->
-            if (itemInfo.offset < 0) {
-                itemInfo.offset + itemInfo.size >= viewportSize
-            } else {
-                itemInfo.size - itemInfo.offset >= viewportSize
-            }
-        }?.month
+        visibleMonthsInfo
+            .firstOrNull { itemInfo ->
+                if (itemInfo.offset < 0) {
+                    itemInfo.offset + itemInfo.size >= viewportSize
+                } else {
+                    itemInfo.size - itemInfo.offset >= viewportSize
+                }
+            }?.month
     }
-}

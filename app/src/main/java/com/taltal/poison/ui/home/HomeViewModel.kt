@@ -24,35 +24,45 @@ class HomeViewModel
                     hasPadding = false,
                 ),
             )
-    val currentPoisonJson = MutableStateFlow("poe_main_0.json")
+        val currentPoisonJson = MutableStateFlow("poe_main_0.json")
 
         init {
+            enter()
             getPoisonState()
         }
 
         private fun getPoisonState() {
             viewModelScope.launch {
                 val currentData = repository.getToday()
-                uiState.value = HomeUiState(
-                    currentPoison = currentData.todayCount,
-                    purposePoison = currentData.targetCount,
-                    description = currentData.description,
-                    imageUrl = currentData.imageJson,
-                    hasPadding = false,
-                )
+                uiState.value =
+                    HomeUiState(
+                        currentPoison = currentData.todayCount,
+                        purposePoison = currentData.targetCount,
+                        description = currentData.description,
+                        imageUrl = currentData.imageJson,
+                        hasPadding = false,
+                    )
+                currentPoisonJson.value = currentData.imageJson
+            }
+        }
+
+        private fun enter() {
+            viewModelScope.launch {
+                repository.enter()
             }
         }
 
         fun drink() {
             viewModelScope.launch {
                 val data = repository.updatePoisonStatus()
-                uiState.value = HomeUiState(
-                    currentPoison = data.todayCount,
-                    purposePoison = data.targetCount,
-                    description = data.description,
-                    imageUrl = data.imageJson,
-                    hasPadding = false,
-                )
+                uiState.value =
+                    HomeUiState(
+                        currentPoison = data.todayCount,
+                        purposePoison = data.targetCount,
+                        description = data.description,
+                        imageUrl = data.imageJson,
+                        hasPadding = false,
+                    )
                 currentPoisonJson.value = data.imageJson
             }
         }
