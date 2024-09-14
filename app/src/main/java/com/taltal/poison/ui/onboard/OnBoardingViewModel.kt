@@ -1,6 +1,5 @@
 package com.taltal.poison.ui.onboard
 
-import android.util.Log
 import androidx.compose.foundation.pager.PagerState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,7 +17,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -94,6 +92,7 @@ class OnBoardingViewModel
         fun delayAndMoveToNextPage() {
             viewModelScope.launch {
                 delay(4000)
+                _dailyGoalNumber.value = getRecommendCaffeineIntake()
                 moveToNextPage()
             }
         }
@@ -143,7 +142,7 @@ class OnBoardingViewModel
 
         fun updateTargetPurpose(purpose: String) {
             viewModelScope.launch {
-                _chosenPurpose.value = if (purpose == "카페인 기록") "CAFFEINE_LOG" else "CAFFEINE_REDUCE"
+                _chosenPurpose.value = purpose
             }
         }
 
@@ -165,19 +164,13 @@ class OnBoardingViewModel
             }
         }
 
-        fun getRecommendCaffeineIntake() {
-            viewModelScope.launch {
-                try {
-                    8
-                } catch (e: HttpException) {
-                    // HTTP 예외 처리
-                    Log.e("API_ERROR", "HTTP Exception: ${e.message}")
-                } catch (e: Exception) {
-                    // 기타 예외 처리
-                    Log.e("API_ERROR", "Exception: ${e.message}")
-                }
-            }
-        }
+        suspend fun getRecommendCaffeineIntake(): Int =
+            coffeeRepository.getRecommendCaffeineIntake(
+                birth = _birth.value.toInt(),
+                gender = if (gender.value == "여성") "FEMALE" else "MALE",
+                height = _height.value.toInt(),
+                weight = _weight.value.toInt(),
+            )
 
         fun checkUserNicknameDuplicate() {
             viewModelScope.launch {
@@ -195,22 +188,21 @@ class OnBoardingViewModel
 
         fun uploadUserData(sharedPrefManager: SharedPrefManager) {
             viewModelScope.launch {
-                val isDailyGoal = chosenGoal.value == "매일 단위"
-                val userId = coffeeRepository.uploadUserStatus(
-                    nickname = nickname.value,
-                    height = _height.value.toInt(),
-                    weight = _weight.value.toInt(),
-                    purpose = chosenPurpose.value,
-                    gender = gender.value,
-                    birth = _birth.value,
-                    target = chosenGoal.value,
-                    targetNum = dailyGoalNumber.value ,
-                ).id
+                val userId =
+                    coffeeRepository
+                        .uploadUserStatus(
+                            nickname = nickname.value,
+                            height = _height.value.toInt(),
+                            weight = _weight.value.toInt(),
+                            purpose = if (chosenPurpose.value == "카페인 기록") "CAFFEINE_LOG" else "CAFFEINE_REDUCE",
+                            gender = if (gender.value == "여성") "FEMALE" else "MALE",
+                            birth = _birth.value,
+                            targetNum = dailyGoalNumber.value,
+                        ).id
                 sharedPrefManager.setUserData(
                     id = userId,
                     nickname = nickname.value,
-                    isDailyGoal = isDailyGoal,
-                    goalNumber = if (isDailyGoal) dailyGoalNumber.value else weeklyGoalNumber.value,
+                    goalNumber = dailyGoalNumber.value,
                     forLogging = chosenPurpose.value == "카페인 기록",
                     gender = gender.value,
                     birthDay = _birth.value,

@@ -132,12 +132,11 @@ fun MypageGoalSection() {
             }
         }
 
-    val isDailyGoal = sharedPrefManager.getIsDailyGoal()
     val goalNumber = sharedPrefManager.getGoalNumber()
     val goalText =
         buildAnnotatedString {
             withStyle(style = body_16md.toSpanStyle().copy(background = taltal_yellow_20)) {
-                append(if (isDailyGoal) "매일" else "일주일")
+                append("매일")
             }
 
             append(" 최대 ")

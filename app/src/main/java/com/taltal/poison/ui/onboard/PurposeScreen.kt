@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -82,7 +83,8 @@ fun GoalSection(viewModel: OnBoardingViewModel = hiltViewModel()) {
     val sharedPrefManager: SharedPrefManager by lazy {
         SharedPrefManager(context)
     }
-    val selectedGoal = viewModel.chosenGoal.collectAsState()
+    val recommendedGoal = viewModel.dailyGoalNumber.collectAsState()
+    var selectedGoal by remember { mutableStateOf("") }
 
     Column {
         DescriptionCharacter(
@@ -95,28 +97,17 @@ fun GoalSection(viewModel: OnBoardingViewModel = hiltViewModel()) {
         )
         NumberPickerComponent(
             title = "매일 단위",
+            currentGoal = recommendedGoal.value,
             description = "하루 최대 샷 수",
-            isSelected = selectedGoal.value == "매일 단위",
-            updateGoal = { viewModel.updateGoal(it) },
+            isSelected = selectedGoal == "매일 단위",
+            updateGoal = { selectedGoal = it },
             updateGoalNumber = { viewModel.updateDailyGoalNumber(it) },
             modifier = Modifier.padding(horizontal = 16.dp),
-        )
-
-        NumberPickerComponent(
-            title = "일주일 단위",
-            description = "일주일 최대 샷 수",
-            isSelected = selectedGoal.value == "일주일 단위",
-            updateGoal = { viewModel.updateGoal(it) },
-            updateGoalNumber = { viewModel.updateWeeklyGoalNumber(it) },
-            modifier =
-                Modifier
-                    .padding(top = 16.dp)
-                    .padding(horizontal = 16.dp),
         )
         Spacer(modifier = Modifier.weight(1f))
         ConfirmButton(
             text = "완료",
-            isEnabled = selectedGoal.value.isNotEmpty(),
+            isEnabled = selectedGoal.isNotEmpty(),
             onClick = {
                 viewModel.uploadUserData(sharedPrefManager)
             },
@@ -128,12 +119,13 @@ fun GoalSection(viewModel: OnBoardingViewModel = hiltViewModel()) {
 fun NumberPickerComponent(
     modifier: Modifier = Modifier,
     title: String,
+    currentGoal: Int,
     description: String,
     isSelected: Boolean,
     updateGoal: (String) -> Unit = {},
     updateGoalNumber: (Int) -> Unit = {},
 ) {
-    var number by remember { mutableIntStateOf(2) }
+    var number by remember { mutableIntStateOf(currentGoal) }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -238,6 +230,7 @@ private fun NumberPickerComponentPreview() {
         description = "하루 최대 샷 수",
         isSelected = false,
         modifier = Modifier.padding(8.dp),
+        currentGoal = 2
     )
 }
 
@@ -249,6 +242,7 @@ private fun NumberPickerComponentPreview2() {
         description = "하루 최대 샷 수",
         isSelected = true,
         modifier = Modifier.padding(8.dp),
+        currentGoal = 2
     )
 }
 

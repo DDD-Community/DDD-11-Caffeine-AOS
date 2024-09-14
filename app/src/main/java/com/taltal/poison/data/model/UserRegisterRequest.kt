@@ -10,6 +10,5 @@ data class UserRegisterRequest(
     val purpose: String,
     val birth: String,
     val gender: String,
-    val target: String,
-    val targetNums: Int
+    val targetNum: Int
 )

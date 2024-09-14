@@ -1,5 +1,7 @@
 package com.taltal.poison.data.model
 
+import kotlinx.serialization.Serializable
+
 /**
  * "id": "66e522b6a80ea63eb069c533",
  *     "nickname": "test1",
@@ -13,6 +15,7 @@ package com.taltal.poison.data.model
  *     "notification": false,
  *     "token": null
  */
+@Serializable
 data class UserRegisterResponse(
     val id: String,
     val nickname: String,
@@ -20,7 +23,6 @@ data class UserRegisterResponse(
     val weight: Int,
     val birth: String,
     val purpose: String,
-    val target: String,
     val targetNum: Int,
     val gender: String,
     val notification: Boolean,

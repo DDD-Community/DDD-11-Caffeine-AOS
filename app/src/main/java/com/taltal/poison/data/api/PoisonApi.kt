@@ -26,4 +26,12 @@ interface PoisonApi {
     suspend fun uploadUserStatus(
         @Body userRegisterRequest: UserRegisterRequest
     ): BaseResponse<UserRegisterResponse>
+
+    @GET("api/v1/recommend")
+    suspend fun getRecommendCaffeineIntake(
+        @Query("gender") gender: String,
+        @Query("birth") birth: Int,
+        @Query("height") height: Int,
+        @Query("weight") weight: Int,
+    ): BaseResponse<Int>
 }

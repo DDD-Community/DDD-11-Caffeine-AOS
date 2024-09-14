@@ -13,7 +13,7 @@ class PoisonCoffeeRepository
     constructor(
         private val coffeeLogDao: CoffeeLogDao,
         private val poisonApi: PoisonApi,
-        private val sharedPrefManager: SharedPrefManager
+        private val sharedPrefManager: SharedPrefManager,
     ) {
         private val userId = sharedPrefManager.getUserId()
 
@@ -45,20 +45,31 @@ class PoisonCoffeeRepository
             purpose: String,
             gender: String,
             birth: String,
-            target: String,
             targetNum: Int,
         ): UserRegisterResponse =
             poisonApi
                 .uploadUserStatus(
                     UserRegisterRequest(
-                        nickname,
-                        height,
-                        weight,
-                        purpose,
-                        birth,
-                        gender,
-                        target,
-                        targetNum,
+                        nickname = nickname,
+                        height = height,
+                        weight = weight,
+                        purpose = purpose,
+                        birth = birth,
+                        gender = gender,
+                        targetNum = targetNum,
                     ),
                 ).result
+
+        suspend fun getRecommendCaffeineIntake(
+            gender: String,
+            birth: Int,
+            height: Int,
+            weight: Int,
+        ) = poisonApi
+            .getRecommendCaffeineIntake(
+                gender = gender,
+                birth = birth,
+                height = height,
+                weight = weight,
+            ).result
     }
