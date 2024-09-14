@@ -6,9 +6,14 @@ import kotlinx.serialization.Serializable
 data class TodayResponse(
     val todayCount: Int,
     val targetCount: Int,
-    val ratio: Double,
-    val image: ImageResponse
+    val description: String,
+    val imageJson: String
 )
 
 @Serializable
 data class ImageResponse(val description: String)
+
+@Serializable
+data class UpdatePoisonStatusRequest(
+    val userId: String
+)

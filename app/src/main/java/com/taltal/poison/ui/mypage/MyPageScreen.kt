@@ -2,10 +2,12 @@ package com.taltal.poison.ui.mypage
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -30,12 +32,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.taltal.poison.R
-import com.taltal.poison.ui.designsystem.PoisonTransition
-import com.taltal.poison.ui.onboard.ProfileSection
 import com.taltal.poison.ui.theme.body_16md
 import com.taltal.poison.ui.theme.caption_12rg
 import com.taltal.poison.ui.theme.taltal_neutral_10
@@ -53,43 +53,44 @@ fun MyPageScreen() {
     val navController = rememberNavController()
     val context = LocalContext.current
 
-    val viewModel =
-        MyPageViewModel(
-            sharedPrefManager = SharedPrefManager(context),
-            navController = navController,
-        )
+    val viewModel = hiltViewModel<MyPageViewModel>()
 
-    NavHost(navController = navController, startDestination = "home") {
-        MYPAGE.entries.forEach { screen ->
-            composable(
-                route = screen.name,
-                enterTransition = { PoisonTransition.slideEnterHorizontally() },
-                exitTransition = { PoisonTransition.slideExitHorizontally() },
-                popEnterTransition = { PoisonTransition.slidePopEnterHorizontally() },
-                popExitTransition = { PoisonTransition.slidePopExitHorizontally() },
-            ) {
-                createScreen(screen, viewModel)
-            }
-        }
-    }
-
-    MyPageHome()
+//    NavHost(navController = navController, startDestination = MYPAGE.HOME.name) {
+//        MYPAGE.entries.forEach { screen ->
+//            composable(
+//                route = screen.name,
+//                enterTransition = { PoisonTransition.slideEnterHorizontally() },
+//                exitTransition = { PoisonTransition.slideExitHorizontally() },
+//                popEnterTransition = { PoisonTransition.slidePopEnterHorizontally() },
+//                popExitTransition = { PoisonTransition.slidePopExitHorizontally() },
+//            ) {
+//                createScreen(screen, viewModel)
+//            }
+//        }
+//    }
+    MyPageHome(viewModel = viewModel, navController = navController)
 }
 
+// @Composable
+// fun createScreen(
+//    screen: MYPAGE,
+//    viewModel: MyPageViewModel,
+// ) {
+//    when (screen) {
+//        MYPAGE.HOME -> MyPageHome(viewModel = viewModel)
+//        MYPAGE.PROFILE -> MyProfileSection(viewModel = viewModel)
+//    }
+// }
+
 @Composable
-fun createScreen(
-    screen: MYPAGE,
-    viewModel: MyPageViewModel
+fun MyPageHome(
+    modifier: Modifier = Modifier,
+    viewModel: MyPageViewModel,
+    navController: NavController,
 ) {
-    when (screen) {
-        MYPAGE.HOME -> MyPageHome()
-        MYPAGE.PROFILE -> ProfileSection()
-    }
-}
-
-@Composable
-fun MyPageHome(modifier: Modifier = Modifier) {
-    Column {
+    Column(
+        modifier = Modifier.fillMaxHeight()
+    ) {
         Box(
             modifier = Modifier.height(52.dp),
             contentAlignment = Alignment.Center,
@@ -103,7 +104,7 @@ fun MyPageHome(modifier: Modifier = Modifier) {
         }
         MypageGoalSection()
         Spacer(modifier = Modifier.padding(vertical = 8.dp))
-        MypageSettingSection()
+        MypageSettingSection(viewModel = viewModel, navController = navController)
     }
 }
 
@@ -200,7 +201,10 @@ fun MypageGoalSection() {
 }
 
 @Composable
-fun MypageSettingSection() {
+fun MypageSettingSection(
+    viewModel: MyPageViewModel,
+    navController: NavController,
+) {
     var checked by remember { mutableStateOf(false) }
     Column(
         modifier =
@@ -210,7 +214,12 @@ fun MypageSettingSection() {
                 .padding(horizontal = 16.dp),
     ) {
         Row(
-            modifier = Modifier.height(52.dp),
+            modifier =
+                Modifier
+                    .height(52.dp)
+                    .fillMaxWidth()
+                    .clickable { viewModel.navigateToProfileSetting(navController) }
+                        ,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Image(
@@ -299,17 +308,22 @@ fun MypageSettingSection() {
 
 enum class MYPAGE {
     HOME,
-    PROFILE,
+//    PROFILE,
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun MyPageScreenView() {
-    MyPageHome()
+    val navController = rememberNavController()
+    MyPageHome(viewModel = hiltViewModel(), navController = navController)
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun SettingPreview() {
-    MypageSettingSection()
+    val navController = rememberNavController()
+    MypageSettingSection(
+        viewModel = hiltViewModel(),
+        navController = navController,
+    )
 }

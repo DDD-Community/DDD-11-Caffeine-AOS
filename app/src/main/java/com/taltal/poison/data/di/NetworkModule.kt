@@ -40,7 +40,7 @@ object NetworkModule {
         okHttpClient: OkHttpClient,
     ): Retrofit = Retrofit.Builder()
         .client(okHttpClient)
-        .baseUrl("http://138.2.112.144:8080")
+        .baseUrl("http://138.2.112.144:8080/")
         .addConverterFactory(serializer.asConverterFactory("application/json".toMediaType()))
         .build()
 

@@ -3,6 +3,7 @@ package com.taltal.poison.ui.home
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -56,8 +57,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
@@ -97,12 +96,11 @@ fun HomeScreen() {
     ) { innerPadding ->
         NavHost(
             modifier =
-            Modifier
-                .padding(
-                    // 탭 스크린 내부 UI 패딩 필요
-                    bottom = innerPadding.calculateBottomPadding(),
-                )
-                .background(Color.White),
+                Modifier
+                    .padding(
+                        // 탭 스크린 내부 UI 패딩 필요
+                        bottom = innerPadding.calculateBottomPadding(),
+                    ).background(Color.White),
             navController = navController,
             startDestination = BottomNavItem.Home.screenRoute,
         ) {
@@ -122,66 +120,87 @@ fun HomeScreen() {
 @Composable
 fun HomeLogScreen(viewModel: HomeViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var currentJson by remember { mutableStateOf(R.raw.poe_main_0) }
+    val currentPoisonAnimationJson = viewModel.currentPoisonJson.collectAsStateWithLifecycle()
+    val lottieComposition by rememberLottieComposition(LottieCompositionSpec.RawRes(currentJson))
+    var isPlaying by remember { mutableStateOf(false) }
+    val progress by animateLottieCompositionAsState(
+        composition = lottieComposition,
+        isPlaying = isPlaying,
+    )
+    val context = LocalContext.current
+
+    LaunchedEffect(currentPoisonAnimationJson.value) {
+        val resId =
+            context.resources.getIdentifier(
+                currentPoisonAnimationJson.value.removeSuffix(".json"),
+                "raw",
+                context.packageName,
+            )
+        currentJson = resId
+    }
+
+    LaunchedEffect(key1 = progress) {
+        if (!isPlaying) return@LaunchedEffect
+        if (progress == 0f) isPlaying = true
+        if (progress == 1f) isPlaying = false
+    }
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        // 추후 선택형 헤더로 교체
         Spacer(
             modifier =
             Modifier
                 .fillMaxWidth()
                 .background(Color.White)
-                .height(12.dp),
+                .height(56.dp),
+        )
+        Spacer(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .height(12.dp),
         )
         TodayPoisonStatus(
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .background(Color.White),
+                Modifier
+                    .fillMaxWidth()
+                    .background(Color.White),
             currentPoison = uiState.currentPoison,
             poisonPurpose = uiState.purposePoison,
             description = uiState.description,
         )
         Spacer(
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .background(Color.White)
-                .height(if (uiState.hasPadding) 100.dp else 20.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .height( 20.dp),
         )
-        AsyncImage(
-            modifier =
-            Modifier
-                .fillMaxWidth()
-                .background(Color.White)
-                .height(290.dp),
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(uiState.imageUrl)
-                .crossfade(true)
-                .build(),
-            placeholder = painterResource(R.drawable.happy_poe),
-            contentDescription = "Poison Status Image",
-        )
-        Spacer(
-            modifier = Modifier
-                .weight(1f)
-                .background(if (uiState.hasPadding) Color(0xFF6F5338F2) else Color.White)
-        )
-        PoisonAddButton(text = "+ 커피 한 샷", onClick = { viewModel.drink(true) })
-        Spacer(modifier = Modifier.height(36.dp))
-    }
-}
-
-@Composable
-private fun HomeTopBar(onClick: () -> Unit) {
-    Row(
-        modifier =
-        Modifier
-            .fillMaxWidth()
-            .height(52.dp)
-            .padding(end = 16.dp),
-        horizontalArrangement = Arrangement.End,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        PoisonTypeButton(onClick)
+        Box(
+            modifier = Modifier.fillMaxHeight(),
+            contentAlignment = Alignment.BottomCenter,
+        ) {
+            LottieAnimation(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                        .padding(bottom = 36.dp)
+                        .align(Alignment.BottomCenter),
+                composition = lottieComposition,
+                progress = { progress },
+            )
+            PoisonAddButton(
+                modifier = Modifier.padding(bottom = 36.dp),
+                text = "+ 커피 한 샷",
+                onClick = {
+                    isPlaying = true
+                    viewModel.drink()
+                },
+            )
+        }
     }
 }
 
@@ -193,11 +212,11 @@ fun PoisonBottomBar(navController: NavHostController) {
     Divider(color = taltal_neutral_5, modifier = Modifier.zIndex(3f))
     Row(
         modifier =
-        Modifier
-            .background(Color.White)
-            .fillMaxWidth()
-            .height(80.dp)
-            .zIndex(2f),
+            Modifier
+                .background(Color.White)
+                .fillMaxWidth()
+                .height(80.dp)
+                .zIndex(2f),
         verticalAlignment = Alignment.Top,
     ) {
         BottomNavButton(
@@ -308,16 +327,20 @@ private fun TodayPoisonStatus(
     description: String,
     modifier: Modifier = Modifier,
 ) {
-
-    fun getProgress(currentPoison: Int, poisonPurpose: Int): Float {
-        return if (currentPoison > poisonPurpose) {
+    fun getProgress(
+        currentPoison: Int,
+        poisonPurpose: Int,
+    ): Float =
+        if (currentPoison > poisonPurpose) {
             (currentPoison - poisonPurpose).toFloat() / poisonPurpose.toFloat()
         } else {
             currentPoison.toFloat() / poisonPurpose.toFloat()
         }
-    }
 
-    fun getProgressBackgroundColor(currentPoison: Int, poisonPurpose: Int): Color {
+    fun getProgressBackgroundColor(
+        currentPoison: Int,
+        poisonPurpose: Int,
+    ): Color {
         val criteria = currentPoison.toFloat() / poisonPurpose.toFloat()
         return when {
             criteria <= 1 -> taltal_neutral_5
@@ -326,7 +349,10 @@ private fun TodayPoisonStatus(
         }
     }
 
-    fun getProgressColor(currentPoison: Int, poisonPurpose: Int): Color {
+    fun getProgressColor(
+        currentPoison: Int,
+        poisonPurpose: Int,
+    ): Color {
         val criteria = currentPoison.toFloat() / poisonPurpose.toFloat()
         return when {
             criteria <= 1 -> taltal_yellow_60
@@ -360,8 +386,7 @@ private fun TodayPoisonStatus(
     currentPoison: Int,
     poisonPurpose: Int,
 ) {
-    fun getCurrentPoisonColor(): Color =
-        if (currentPoison > poisonPurpose) taltal_red_50 else taltal_yellow_60
+    fun getCurrentPoisonColor(): Color = if (currentPoison > poisonPurpose) taltal_red_50 else taltal_yellow_60
 
     Row(
         horizontalArrangement = Arrangement.Center,
@@ -383,24 +408,25 @@ private fun TodayPoisonStatusProgressIndicator(
     progress: Float,
     progressColor: Color,
     backgroundColor: Color,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val animatedProgress by animateFloatAsState(targetValue = progress)
 
     Box(modifier = modifier) {
         LinearProgressIndicator(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(16.dp),
             progress = { 100f },
             color = backgroundColor,
             strokeCap = StrokeCap.Round,
         )
         LinearProgressIndicator(
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .height(16.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .height(16.dp),
             progress = { animatedProgress },
             color = progressColor,
             trackColor = Color.Transparent,
@@ -429,7 +455,7 @@ private fun PoisonAddButton(
     var isPlaying by remember { mutableStateOf(false) }
     val progress by animateLottieCompositionAsState(
         composition = lottieComposition,
-        isPlaying = isPlaying
+        isPlaying = isPlaying,
     )
 
     LaunchedEffect(key1 = progress) {
@@ -449,9 +475,9 @@ private fun PoisonAddButton(
         ) {
             Column(
                 modifier =
-                Modifier
-                    .background(Color.White)
-                    .padding(vertical = 12.dp, horizontal = 24.dp),
+                    Modifier
+                        .background(Color.White)
+                        .padding(vertical = 12.dp, horizontal = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Image(
@@ -464,11 +490,12 @@ private fun PoisonAddButton(
             }
         }
         LottieAnimation(
-            modifier = Modifier
-                .height(130.dp)
-                .align(Alignment.Center),
+            modifier =
+                Modifier
+                    .height(130.dp)
+                    .align(Alignment.Center),
             composition = lottieComposition,
-            progress = { progress }
+            progress = { progress },
         )
     }
 }

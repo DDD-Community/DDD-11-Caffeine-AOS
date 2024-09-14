@@ -143,7 +143,7 @@ class OnBoardingViewModel
 
         fun updateTargetPurpose(purpose: String) {
             viewModelScope.launch {
-                _chosenPurpose.value = purpose
+                _chosenPurpose.value = if (purpose == "카페인 기록") "CAFFEINE_LOG" else "CAFFEINE_REDUCE"
             }
         }
 
@@ -168,7 +168,7 @@ class OnBoardingViewModel
         fun getRecommendCaffeineIntake() {
             viewModelScope.launch {
                 try {
-                    5
+                    8
                 } catch (e: HttpException) {
                     // HTTP 예외 처리
                     Log.e("API_ERROR", "HTTP Exception: ${e.message}")
@@ -196,7 +196,18 @@ class OnBoardingViewModel
         fun uploadUserData(sharedPrefManager: SharedPrefManager) {
             viewModelScope.launch {
                 val isDailyGoal = chosenGoal.value == "매일 단위"
+                val userId = coffeeRepository.uploadUserStatus(
+                    nickname = nickname.value,
+                    height = _height.value.toInt(),
+                    weight = _weight.value.toInt(),
+                    purpose = chosenPurpose.value,
+                    gender = gender.value,
+                    birth = _birth.value,
+                    target = chosenGoal.value,
+                    targetNum = dailyGoalNumber.value ,
+                ).id
                 sharedPrefManager.setUserData(
+                    id = userId,
                     nickname = nickname.value,
                     isDailyGoal = isDailyGoal,
                     goalNumber = if (isDailyGoal) dailyGoalNumber.value else weeklyGoalNumber.value,
@@ -204,9 +215,8 @@ class OnBoardingViewModel
                     gender = gender.value,
                     birthDay = _birth.value,
                     height = _height.value,
-                    weight = _weight.value
+                    weight = _weight.value,
                 )
-                // upload user data to server
                 _navigator.emit(NavRoute.Home)
             }
         }

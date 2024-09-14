@@ -21,7 +21,7 @@ import com.taltal.poison.ui.theme.body_14md
 import com.taltal.poison.ui.theme.body_16rg
 
 @Composable
-fun ProfileSection(viewModel: MyPageViewModel) {
+fun MyProfileSection(viewModel: MyPageViewModel) {
     val gender = viewModel.gender.collectAsState()
     val birthday = viewModel.birth.collectAsState()
     val height = viewModel.height.collectAsState()
@@ -108,7 +108,7 @@ fun ProfileSection(viewModel: MyPageViewModel) {
         }
         Spacer(modifier = Modifier.weight(1f))
         ConfirmButton(
-            text = "다음",
+            text = "확인",
             isEnabled = isProfileFullFilled,
             onClick = {
             },

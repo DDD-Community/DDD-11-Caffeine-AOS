@@ -12,6 +12,7 @@ class SharedPrefManager(
     fun getLoginStatus(): Boolean = sharedPreferences.getBoolean(IS_LOGGED_IN, false)
 
     fun setUserData(
+        id: String,
         nickname: String,
         isDailyGoal: Boolean,
         goalNumber: Int,
@@ -23,6 +24,7 @@ class SharedPrefManager(
     ) {
         val editor = sharedPreferences.edit()
         editor.putBoolean("is_onboarding_finished", true)
+        editor.putString(USER_ID, id)
         editor.putString(NICKNAME, nickname)
         editor.putBoolean(IS_DAILY_GOAL, isDailyGoal)
         editor.putBoolean(FOR_LOGGING, forLogging)
@@ -51,7 +53,10 @@ class SharedPrefManager(
 
     fun getWeight(): String = sharedPreferences.getString(WEIGHT, "") ?: ""
 
+    fun getUserId(): String = sharedPreferences.getString(USER_ID, "") ?: ""
+
     companion object {
+        private const val USER_ID = "user_id"
         private const val IS_LOGGED_IN = "is_logged_in"
         private const val NICKNAME = "nickname"
         private const val FOR_LOGGING = "for_logging"

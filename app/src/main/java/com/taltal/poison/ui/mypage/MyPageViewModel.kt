@@ -1,19 +1,22 @@
 package com.taltal.poison.ui.mypage
 
+import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.taltal.poison.util.SharedPrefManager
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MyPageViewModel(
-    private val sharedPrefManager: SharedPrefManager,
-    private val navController: NavController,
+@HiltViewModel
+class MyPageViewModel @Inject constructor(
+    sharedPrefManager: SharedPrefManager,
 ) : ViewModel() {
     private val _gender = MutableStateFlow<String>(sharedPrefManager.getGender())
     val gender: StateFlow<String> = _gender
@@ -58,11 +61,9 @@ class MyPageViewModel(
         }
     }
 
-    fun navigateToUp() {
-        navController.navigateUp()
-    }
-
-    fun navigateToProfileSetting() {
-        navController.navigate(MYPAGE.PROFILE)
+    fun navigateToProfileSetting(navController: NavController) {
+        val context = navController.context
+        val intent = Intent(context, ProfileSettingActivity::class.java)
+        context.startActivity(intent)
     }
 }
