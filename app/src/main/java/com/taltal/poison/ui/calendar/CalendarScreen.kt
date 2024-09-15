@@ -50,8 +50,6 @@ fun CalendarScreen(viewModel: CalendarViewModel = hiltViewModel()) {
         CalendarTitle(
             modifier = Modifier.fillMaxWidth(),
             currentMonth = visibleMonth.yearMonth,
-            arrowLeftImageResId = R.drawable.arrow_left,
-            arrowRightImageResId = R.drawable.arrow_right,
             goToPrevious = {
                 coroutineScope.launch {
                     state.animateScrollToMonth(state.firstVisibleMonth.yearMonth.previousMonth)

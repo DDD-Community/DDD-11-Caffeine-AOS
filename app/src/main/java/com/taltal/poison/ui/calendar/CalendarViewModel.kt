@@ -97,7 +97,7 @@ class CalendarViewModel
                 append("안 마셨어요!")
             } else {
                 append("총 ")
-                withStyle(SpanStyle(color = poisonState.getColor())) { append("${shot}샷 ") }
+                withStyle(SpanStyle(color = poisonState.getColor())) { append("${shot}잔 ") }
                 append("마셨어요")
             }
         }
@@ -110,17 +110,20 @@ class CalendarViewModel
                 )
             })"
 
-        private fun getDailyDetailRecord(records: List<PoisonRecord>) =
-            records.joinToString("\n") {
-                "${
-                    it.dateTime.format(
-                        DateTimeFormatter.ofPattern(
-                            "a h시 mm분",
-                            Locale.KOREAN,
-                        ),
-                    )
-                } +${it.shot}잔"
-            }
+        private fun getFormattedRecord(record: PoisonRecord): String =
+            "${
+                record.dateTime.format(
+                    DateTimeFormatter.ofPattern(
+                        "a h시 mm분",
+                        Locale.KOREAN,
+                    ),
+                )
+            } +${record.shot}잔"
+
+        private fun getDailyDetailRecord(records: List<PoisonRecord>): String {
+            val formattedRecords = records.take(3).joinToString("\n") { getFormattedRecord(it) }
+            return if (records.size > 3) "$formattedRecords\n···" else formattedRecords
+        }
 
         private fun getPoisonState(value: String): PoisonState =
             when (value) {

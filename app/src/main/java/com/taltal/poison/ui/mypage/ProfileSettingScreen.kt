@@ -1,5 +1,6 @@
 package com.taltal.poison.ui.mypage
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,7 +12,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextDecoration.Companion.Underline
 import androidx.compose.ui.unit.dp
 import com.taltal.poison.ui.designsystem.BirthdayVisualTransformation
 import com.taltal.poison.ui.designsystem.ConfirmButton
@@ -19,9 +22,17 @@ import com.taltal.poison.ui.designsystem.OptionSelection
 import com.taltal.poison.ui.designsystem.RoundedTextField
 import com.taltal.poison.ui.theme.body_14md
 import com.taltal.poison.ui.theme.body_16rg
+import com.taltal.poison.ui.theme.caption_12rg
+import com.taltal.poison.ui.theme.taltal_neutral_50
+import com.taltal.poison.util.IntentStarter
 
 @Composable
-fun MyProfileSection(viewModel: MyPageViewModel) {
+fun MyProfileSection(
+    viewModel: MyPageViewModel,
+    onBackPressed: () -> Unit,
+) {
+    val context = LocalContext.current
+
     val gender = viewModel.gender.collectAsState()
     val birthday = viewModel.birth.collectAsState()
     val height = viewModel.height.collectAsState()
@@ -106,11 +117,18 @@ fun MyProfileSection(viewModel: MyPageViewModel) {
                 }
             }
         }
+        Text(
+            text = "회원 탈퇴",
+            style = caption_12rg.copy(color = taltal_neutral_50),
+            modifier = Modifier.padding(start = 16.dp, top = 16.dp).clickable { IntentStarter.startRemoveIdForm(context) },
+            textDecoration = Underline,
+        )
         Spacer(modifier = Modifier.weight(1f))
         ConfirmButton(
-            text = "확인",
+            text = "저장",
             isEnabled = isProfileFullFilled,
             onClick = {
+                viewModel.updateProfile { onBackPressed.invoke() }
             },
         )
     }

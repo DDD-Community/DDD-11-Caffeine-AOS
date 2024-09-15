@@ -68,7 +68,7 @@ fun PurposeSection(viewModel: OnBoardingViewModel = hiltViewModel()) {
         )
         Spacer(modifier = Modifier.weight(1f))
         ConfirmButton(
-            text = "목표추천받기",
+            text = "목표 추천받기",
             isEnabled = purpose.value.isNotEmpty(),
             onClick = {
                 viewModel.moveToNextPage()

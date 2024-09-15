@@ -41,46 +41,22 @@ import com.taltal.poison.ui.theme.caption_12rg
 import com.taltal.poison.ui.theme.taltal_neutral_10
 import com.taltal.poison.ui.theme.taltal_neutral_5
 import com.taltal.poison.ui.theme.taltal_neutral_50
+import com.taltal.poison.ui.theme.taltal_neutral_70
 import com.taltal.poison.ui.theme.taltal_yellow_20
 import com.taltal.poison.ui.theme.taltal_yellow_50
 import com.taltal.poison.ui.theme.taltal_yellow_70
 import com.taltal.poison.ui.theme.title_12bd
 import com.taltal.poison.ui.theme.title_18sb
+import com.taltal.poison.util.IntentStarter
 import com.taltal.poison.util.SharedPrefManager
 
 @Composable
 fun MyPageScreen() {
     val navController = rememberNavController()
-    val context = LocalContext.current
 
     val viewModel = hiltViewModel<MyPageViewModel>()
-
-//    NavHost(navController = navController, startDestination = MYPAGE.HOME.name) {
-//        MYPAGE.entries.forEach { screen ->
-//            composable(
-//                route = screen.name,
-//                enterTransition = { PoisonTransition.slideEnterHorizontally() },
-//                exitTransition = { PoisonTransition.slideExitHorizontally() },
-//                popEnterTransition = { PoisonTransition.slidePopEnterHorizontally() },
-//                popExitTransition = { PoisonTransition.slidePopExitHorizontally() },
-//            ) {
-//                createScreen(screen, viewModel)
-//            }
-//        }
-//    }
     MyPageHome(viewModel = viewModel, navController = navController)
 }
-
-// @Composable
-// fun createScreen(
-//    screen: MYPAGE,
-//    viewModel: MyPageViewModel,
-// ) {
-//    when (screen) {
-//        MYPAGE.HOME -> MyPageHome(viewModel = viewModel)
-//        MYPAGE.PROFILE -> MyProfileSection(viewModel = viewModel)
-//    }
-// }
 
 @Composable
 fun MyPageHome(
@@ -89,7 +65,7 @@ fun MyPageHome(
     navController: NavController,
 ) {
     Column(
-        modifier = Modifier.fillMaxHeight()
+        modifier = Modifier.fillMaxHeight(),
     ) {
         Box(
             modifier = Modifier.height(52.dp),
@@ -136,7 +112,7 @@ fun MypageGoalSection() {
     val goalText =
         buildAnnotatedString {
             withStyle(style = body_16md.toSpanStyle().copy(background = taltal_yellow_20)) {
-                append("매일")
+                append("하루")
             }
 
             append(" 최대 ")
@@ -169,11 +145,12 @@ fun MypageGoalSection() {
             Text(
                 text = nickNameText,
                 style = title_18sb,
-                modifier = Modifier.padding(start = 32.dp, top = 16.dp),
+                modifier = Modifier.padding(top = 16.dp, bottom = 8.dp).fillMaxWidth(),
+                textAlign = TextAlign.Center,
             )
-            Row {
+            Row(modifier = Modifier.padding(bottom = 4.dp)) {
                 Image(
-                    painter = painterResource(id = R.drawable.ic_checkbox_24),
+                    painter = painterResource(id = R.drawable.ic_check_normal),
                     contentDescription = null,
                     modifier = Modifier.padding(end = 4.dp),
                 )
@@ -186,7 +163,7 @@ fun MypageGoalSection() {
                 modifier = Modifier.padding(bottom = 16.dp),
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.ic_checkbox_24),
+                    painter = painterResource(id = R.drawable.ic_check_normal),
                     contentDescription = null,
                     modifier = Modifier.padding(end = 4.dp),
                 )
@@ -204,6 +181,7 @@ fun MypageSettingSection(
     viewModel: MyPageViewModel,
     navController: NavController,
 ) {
+    val context = LocalContext.current
     var checked by remember { mutableStateOf(false) }
     Column(
         modifier =
@@ -217,8 +195,7 @@ fun MypageSettingSection(
                 Modifier
                     .height(52.dp)
                     .fillMaxWidth()
-                    .clickable { viewModel.navigateToProfileSetting(navController) }
-                        ,
+                    .clickable { viewModel.navigateToProfileSetting(navController) },
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Image(
@@ -226,7 +203,7 @@ fun MypageSettingSection(
                 contentDescription = null,
                 modifier = Modifier.padding(end = 8.dp),
             )
-            Text(text = "내 정보 수정", style = body_16md)
+            Text(text = "내 정보 수정", style = body_16md.copy(color = taltal_neutral_70))
         }
         HorizontalDivider(color = taltal_neutral_5)
         Row(
@@ -240,12 +217,13 @@ fun MypageSettingSection(
                         contentDescription = null,
                         modifier = Modifier.padding(end = 8.dp),
                     )
-                    Text(text = "알림 설정", style = body_16md)
+                    Text(text = "알림 설정", style = body_16md.copy(color = taltal_neutral_70))
                 }
                 Text(
                     text = "잊지 않고 기록하실 수 있도록 알림을 보내드려요",
                     style = caption_12rg,
                     color = taltal_neutral_50,
+                    modifier = Modifier.padding(top = 4.dp),
                 )
             }
 
@@ -267,7 +245,10 @@ fun MypageSettingSection(
         }
         HorizontalDivider(color = taltal_neutral_5)
         Row(
-            modifier = Modifier.height(52.dp),
+            modifier =
+                Modifier
+                    .height(52.dp)
+                    .clickable { IntentStarter.startQuestionForm(context) },
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Image(
@@ -275,7 +256,7 @@ fun MypageSettingSection(
                 contentDescription = null,
                 modifier = Modifier.padding(end = 8.dp),
             )
-            Text(text = "문의하기", style = body_16md)
+            Text(text = "문의하기", style = body_16md.copy(color = taltal_neutral_70))
         }
         HorizontalDivider(color = taltal_neutral_5)
         Row(
@@ -290,14 +271,20 @@ fun MypageSettingSection(
             )
             Text(
                 text = "이용약관",
-                modifier = Modifier.padding(end = 4.dp),
+                modifier =
+                    Modifier
+                        .padding(end = 4.dp)
+                        .clickable { IntentStarter.startUsingConditionForm(context) },
                 style = caption_12rg,
                 color = taltal_neutral_50,
             )
             Text(text = "·")
             Text(
                 text = "개인정보 처리방침",
-                modifier = Modifier.padding(start = 4.dp),
+                modifier =
+                    Modifier
+                        .padding(start = 4.dp)
+                        .clickable { IntentStarter.startPrivacyPolicyForm(context) },
                 style = title_12bd,
                 color = taltal_neutral_50,
             )

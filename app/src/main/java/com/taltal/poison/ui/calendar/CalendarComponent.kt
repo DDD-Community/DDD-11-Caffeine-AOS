@@ -35,9 +35,9 @@ import com.kizitonwose.calendar.compose.CalendarState
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
 import com.kizitonwose.calendar.core.DayPosition
+import com.taltal.poison.R
 import com.taltal.poison.ui.calendar.model.PoisonState
-import com.taltal.poison.ui.designsystem.CharacterMessage
-import com.taltal.poison.ui.designsystem.MESSAGE_TAIL_START
+import com.taltal.poison.ui.designsystem.ChatBubbleWithTriangle
 import com.taltal.poison.ui.theme.body_14md
 import com.taltal.poison.ui.theme.taltal_neutral_10
 import com.taltal.poison.ui.theme.taltal_neutral_30
@@ -132,8 +132,6 @@ fun Day(
 fun CalendarTitle(
     modifier: Modifier,
     currentMonth: YearMonth,
-    arrowLeftImageResId: Int,
-    arrowRightImageResId: Int,
     goToPrevious: () -> Unit,
     goToNext: () -> Unit,
 ) {
@@ -142,9 +140,11 @@ fun CalendarTitle(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
     ) {
+        val isLeftArrowEnabled = currentMonth > YearMonth.now().minusYears(1)
+        val isRightArrowEnabled = currentMonth < YearMonth.now()
         Image(
             modifier = Modifier.clickable { goToPrevious.invoke() },
-            painter = painterResource(id = arrowLeftImageResId),
+            painter = painterResource(if (isLeftArrowEnabled) R.drawable.arrow_enabled_left else R.drawable.arrow_disabled_left),
             contentDescription = "이전 달로 이동",
         )
         Spacer(modifier = Modifier.width(12.dp))
@@ -156,7 +156,7 @@ fun CalendarTitle(
         Spacer(modifier = Modifier.width(12.dp))
         Image(
             modifier = Modifier.clickable { goToNext.invoke() },
-            painter = painterResource(id = arrowRightImageResId),
+            painter = painterResource(if (isRightArrowEnabled) R.drawable.arrow_enabled_right else R.drawable.arrow_disabled_right),
             contentDescription = "다음 달로 이동",
         )
     }
@@ -182,11 +182,12 @@ fun DayDetail(
             modifier =
                 Modifier
                     .background(
-                        shape = RoundedCornerShape(4.dp, 16.dp, 4.dp, 16.dp),
+                        shape = RoundedCornerShape(16.dp),
                         color = taltal_neutral_5,
                     ).padding(horizontal = 16.dp, vertical = 4.dp),
             text = dailyPoisonDetail.title,
             style = title_14bd.copy(color = taltal_neutral_80),
+            textAlign = TextAlign.Center,
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = dailyPoisonDetail.subTitle, style = title_20sb.copy(color = taltal_neutral_90))
@@ -198,9 +199,8 @@ fun DayDetail(
                 contentDescription = "",
             )
             if (dailyPoisonDetail.poisonState == PoisonState.Success || dailyPoisonDetail.poisonState == PoisonState.Fail) {
-                CharacterMessage(
+                ChatBubbleWithTriangle(
                     text = dailyPoisonDetail.description,
-                    tailPosition = MESSAGE_TAIL_START,
                 )
             }
         }

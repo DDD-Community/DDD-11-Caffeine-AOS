@@ -35,6 +35,20 @@ class SharedPrefManager(
         editor.apply()
     }
 
+    fun updateUserData(
+        gender: String,
+        birthDay: String,
+        height: String,
+        weight: String,
+    ) {
+        val editor = sharedPreferences.edit()
+        editor.putString(GENDER, gender)
+        editor.putString(BIRTHDAY, birthDay)
+        editor.putString(HEIGHT, height)
+        editor.putString(WEIGHT, weight)
+        editor.apply()
+    }
+
     fun getNickName(): String = sharedPreferences.getString(NICKNAME, "") ?: ""
 
     fun getGoalNumber(): Int = sharedPreferences.getInt(GOAL_NUMBER, 0)

@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MyPageViewModel @Inject constructor(
-    sharedPrefManager: SharedPrefManager,
+    private val sharedPrefManager: SharedPrefManager,
 ) : ViewModel() {
     private val _gender = MutableStateFlow<String>(sharedPrefManager.getGender())
     val gender: StateFlow<String> = _gender
@@ -65,5 +65,15 @@ class MyPageViewModel @Inject constructor(
         val context = navController.context
         val intent = Intent(context, ProfileSettingActivity::class.java)
         context.startActivity(intent)
+    }
+
+    fun updateProfile(finishUpdate: () -> Unit) {
+        sharedPrefManager.updateUserData(
+            gender = gender.value,
+            birthDay = birth.value,
+            height = height.value,
+            weight = weight.value,
+        )
+        finishUpdate.invoke()
     }
 }

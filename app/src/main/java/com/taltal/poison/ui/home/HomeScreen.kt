@@ -176,7 +176,7 @@ fun HomeLogScreen(viewModel: HomeViewModel = hiltViewModel()) {
         )
         PoisonAddButton(
             modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 36.dp),
-            text = "+ 커피 한 샷",
+            text = "+ 커피 한 잔",
             onClick = {
                 isPlaying = true
                 viewModel.drink()
@@ -380,7 +380,7 @@ private fun TodayPoisonStatus(
             style = title_24bd.copy(color = getCurrentPoisonColor()),
         )
         Spacer(modifier = Modifier.width(4.dp))
-        Text(text = "/ ${poisonPurpose}샷", color = taltal_neutral_60)
+        Text(text = "/ ${poisonPurpose}잔", color = taltal_neutral_60)
     }
 }
 
@@ -447,7 +447,7 @@ private fun PoisonAddButton(
 
     Box {
         ElevatedCard(
-            elevation = CardDefaults.elevatedCardElevation(defaultElevation = 8.dp),
+            elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp),
             modifier = modifier.align(Alignment.Center),
             onClick = {
                 isPlaying = true

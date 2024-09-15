@@ -42,7 +42,7 @@ fun ProfileSettingScreen(onBackPressed: () -> Unit) {
             modifier = Modifier.padding(innerPadding),
         ) {
             ProfileHeaderSection(onBackPressed = onBackPressed)
-            MyProfileSection(viewModel)
+            MyProfileSection(viewModel, onBackPressed)
         }
     }
 }
@@ -58,7 +58,7 @@ fun ProfileHeaderSection(onBackPressed: () -> Unit) {
 
         Text(
             text = "내 정보 수정",
-            modifier = Modifier.padding( top = 16.dp),
+            modifier = Modifier.padding(top = 16.dp),
             style = title_18sb,
         )
     }

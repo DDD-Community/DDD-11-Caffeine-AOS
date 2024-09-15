@@ -70,7 +70,7 @@ fun NicknameSection(
             checkError = { !viewModel.checkNickNameValidation(it) },
             needClearButton = true,
             modifier = Modifier
-                .padding(bottom = 16.dp)
+                .padding(bottom = 8.dp)
                 .padding(horizontal = 16.dp)
         )
         NicknameHints(

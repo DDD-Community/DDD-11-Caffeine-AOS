@@ -29,55 +29,57 @@ fun ProfileSection(viewModel: OnBoardingViewModel = hiltViewModel()) {
     Column {
         DescriptionCharacter(
             message = messageList[viewModel.pagerState.currentPage],
-            modifier = Modifier
-                .padding(horizontal = 28.dp)
-                .padding(top = 16.dp, bottom = 12.dp)
+            modifier =
+                Modifier
+                    .padding(horizontal = 28.dp)
+                    .padding(top = 16.dp, bottom = 12.dp),
         )
         Text(
             text = "성별",
             style = body_14md,
-            modifier = Modifier.padding(start = 28.dp, bottom = 8.dp)
+            modifier = Modifier.padding(start = 28.dp, bottom = 8.dp),
         )
         OptionSelection(
             currentOption = gender.value,
             options = listOf("여성", "남성"),
             updateSelectedOption = { viewModel.updateGenderOption(it) },
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(horizontal = 16.dp),
         )
 
         Text(
             text = "생년월일",
             style = body_14md,
-            modifier = Modifier.padding(start = 28.dp, top = 24.dp, bottom = 8.dp)
+            modifier = Modifier.padding(start = 28.dp, top = 24.dp, bottom = 8.dp),
         )
         RoundedTextField(
             textHint = "YYYY.MM.DD",
             modifier = Modifier.padding(horizontal = 16.dp),
             keyboardType = KeyboardType.Number,
             onValueChanged = { viewModel.updateBirth(it) },
-            visualTransformation = BirthdayVisualTransformation()
+            visualTransformation = BirthdayVisualTransformation(),
         )
         Row(modifier = Modifier.padding(16.dp)) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = "키",
                     style = body_14md,
-                    modifier = Modifier.padding(start = 28.dp, top = 24.dp, bottom = 8.dp)
+                    modifier = Modifier.padding(start = 12.dp, top = 24.dp, bottom = 8.dp),
                 )
                 Row(modifier = Modifier.padding(end = 8.dp)) {
                     RoundedTextField(
                         textHint = "",
                         modifier = Modifier.fillMaxWidth(0.8f),
                         keyboardType = KeyboardType.Number,
-                        onValueChanged = { viewModel.updateHeight(it) }
+                        onValueChanged = { viewModel.updateHeight(it) },
                     )
                     Text(
                         text = "cm",
                         style = body_16rg,
-                        modifier = Modifier
-                            .padding(start = 4.dp)
-                            .weight(1f)
-                            .align(Alignment.CenterVertically),
+                        modifier =
+                            Modifier
+                                .padding(start = 4.dp)
+                                .weight(1f)
+                                .align(Alignment.CenterVertically),
                     )
                 }
             }
@@ -85,22 +87,23 @@ fun ProfileSection(viewModel: OnBoardingViewModel = hiltViewModel()) {
                 Text(
                     text = "몸무게",
                     style = body_14md,
-                    modifier = Modifier.padding(start = 12.dp, top = 24.dp, bottom = 8.dp)
+                    modifier = Modifier.padding(start = 12.dp, top = 24.dp, bottom = 8.dp),
                 )
                 Row(modifier = Modifier.padding(end = 8.dp)) {
                     RoundedTextField(
                         textHint = "",
                         modifier = Modifier.fillMaxWidth(0.8f),
                         keyboardType = KeyboardType.Number,
-                        onValueChanged = { viewModel.updateWeight(it) }
+                        onValueChanged = { viewModel.updateWeight(it) },
                     )
                     Text(
                         text = "kg",
                         style = body_16rg,
-                        modifier = Modifier
-                            .padding(start = 4.dp)
-                            .weight(1f)
-                            .align(Alignment.CenterVertically)
+                        modifier =
+                            Modifier
+                                .padding(start = 4.dp)
+                                .weight(1f)
+                                .align(Alignment.CenterVertically),
                     )
                 }
             }
@@ -111,7 +114,7 @@ fun ProfileSection(viewModel: OnBoardingViewModel = hiltViewModel()) {
             isEnabled = isProfileFullFilled,
             onClick = {
                 viewModel.moveToNextPage()
-            }
+            },
         )
     }
 }

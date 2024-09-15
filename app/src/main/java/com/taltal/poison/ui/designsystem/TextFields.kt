@@ -58,7 +58,7 @@ fun RoundedTextField(
     maxLine: Int = 1,
     modifier: Modifier,
     keyboardType: KeyboardType = KeyboardType.Text,
-    visualTransformation: VisualTransformation = VisualTransformation.None
+    visualTransformation: VisualTransformation = VisualTransformation.None,
 ) {
     var textInput by remember { mutableStateOf(text) }
     var isError by remember { mutableStateOf(false) }
@@ -77,23 +77,25 @@ fun RoundedTextField(
                 Text(
                     text = textHint,
                     style = body_16rg,
-                    color = taltal_neutral_50
+                    color = taltal_neutral_50,
                 )
             },
             visualTransformation = visualTransformation,
-            modifier = Modifier
-                .fillMaxWidth()
-                .border(
-                    1.dp,
-                    if (isError && textInput.isNotEmpty()) Color.Red else taltal_neutral_10,
-                    RoundedCornerShape(8.dp)
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .border(
+                        1.dp,
+                        if (isError && textInput.isNotEmpty()) Color.Red else taltal_neutral_10,
+                        RoundedCornerShape(8.dp),
+                    ),
+            shape = RoundedCornerShape(12.dp),
+            colors =
+                TextFieldDefaults.textFieldColors(
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    containerColor = Color.White,
                 ),
-            shape = RoundedCornerShape(8.dp),
-            colors = TextFieldDefaults.textFieldColors(
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                containerColor = Color.White
-            ),
             trailingIcon = {
                 if (needClearButton && textInput.isNotEmpty()) {
                     IconButton(onClick = {
@@ -104,23 +106,25 @@ fun RoundedTextField(
                         Icon(
                             imageVector = Icons.Default.Clear,
                             contentDescription = "Clear input",
-                            tint = taltal_neutral_60
+                            tint = taltal_neutral_60,
                         )
                     }
                 }
             },
             maxLines = maxLine,
-            keyboardOptions = KeyboardOptions(
-                keyboardType = keyboardType,
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    scope.launch {
-                        keyboardController?.hide()
-                    }
-                }
-            )
+            keyboardOptions =
+                KeyboardOptions(
+                    keyboardType = keyboardType,
+                    imeAction = ImeAction.Done,
+                ),
+            keyboardActions =
+                KeyboardActions(
+                    onDone = {
+                        scope.launch {
+                            keyboardController?.hide()
+                        }
+                    },
+                ),
         )
     }
 }
@@ -128,7 +132,7 @@ fun RoundedTextField(
 @Composable
 fun CharacterMessage(
     text: String,
-    tailPosition: Int = MESSAGE_TAIL_END
+    tailPosition: Int = MESSAGE_TAIL_END,
 ) {
     var displayedText by remember { mutableStateOf("") }
 
@@ -141,10 +145,11 @@ fun CharacterMessage(
     }
 
     Box(
-        modifier = Modifier
-            .padding(12.dp)
-            .fillMaxWidth(if (tailPosition == MESSAGE_TAIL_BOTTOM) 1f else 0.7f)
-            .wrapContentHeight()
+        modifier =
+            Modifier
+                .padding(16.dp)
+                .fillMaxWidth(if (tailPosition == MESSAGE_TAIL_BOTTOM || tailPosition == MESSAGE_TAIL_START) 1f else 0.7f)
+                .wrapContentHeight(),
     ) {
         Canvas(modifier = Modifier.matchParentSize()) {
             val cornerRadius = 16.dp.toPx()
@@ -152,44 +157,47 @@ fun CharacterMessage(
             val tailHeight = 10.dp.toPx()
 
             // 말풍선 본체
-            val roundRect = RoundRect(
-                left = if (tailPosition == MESSAGE_TAIL_START) tailWidth else 0f,
-                top = 0f,
-                right = if (tailPosition == MESSAGE_TAIL_BOTTOM) size.width else size.width - tailWidth,
-                bottom = size.height,
-                cornerRadius = CornerRadius(cornerRadius, cornerRadius)
-            )
-            val rectPath = Path().apply {
-                addRoundRect(roundRect)
-            }
+            val roundRect =
+                RoundRect(
+                    left = if (tailPosition == MESSAGE_TAIL_START) tailWidth else 0f,
+                    top = 0f,
+                    right = if (tailPosition == MESSAGE_TAIL_BOTTOM) size.width else size.width - tailWidth,
+                    bottom = size.height,
+                    cornerRadius = CornerRadius(cornerRadius, cornerRadius),
+                )
+            val rectPath =
+                Path().apply {
+                    addRoundRect(roundRect)
+                }
 
             // 말풍선 꼬리
-            val tailPath = Path().apply {
-                when (tailPosition) {
-                    MESSAGE_TAIL_END -> {
-                        moveTo(size.width - tailWidth, size.height / 2 - tailHeight / 2)
-                        lineTo(size.width, size.height / 2)
-                        lineTo(size.width - tailWidth, size.height / 2 + tailHeight / 2)
-                    }
+            val tailPath =
+                Path().apply {
+                    when (tailPosition) {
+                        MESSAGE_TAIL_END -> {
+                            moveTo(size.width - tailWidth, size.height / 2 - tailHeight / 2)
+                            lineTo(size.width, size.height / 2)
+                            lineTo(size.width - tailWidth, size.height / 2 + tailHeight / 2)
+                        }
 
-                    MESSAGE_TAIL_START -> {
-                        moveTo(0f, size.height / 2)
-                        lineTo(tailWidth, size.height / 2 - tailHeight / 2)
-                        lineTo(tailWidth, size.height / 2 + tailHeight / 2)
-                    }
+                        MESSAGE_TAIL_START -> {
+                            moveTo(0f, size.height / 2)
+                            lineTo(tailWidth, size.height / 2 - tailHeight / 2)
+                            lineTo(tailWidth, size.height / 2 + tailHeight / 2)
+                        }
 
-                    MESSAGE_TAIL_BOTTOM -> {
-                        moveTo(size.width / 2 - tailWidth / 2, size.height)
-                        lineTo(size.width / 2, size.height + tailHeight)
-                        lineTo(size.width / 2 + tailWidth / 2, size.height)
-                    }
+                        MESSAGE_TAIL_BOTTOM -> {
+                            moveTo(size.width / 2 - tailWidth / 2, size.height)
+                            lineTo(size.width / 2, size.height + tailHeight)
+                            lineTo(size.width / 2 + tailWidth / 2, size.height)
+                        }
 
-                    else -> {
-                        // do nothing
+                        else -> {
+                            // do nothing
+                        }
                     }
+                    close()
                 }
-                close()
-            }
             drawPath(rectPath, color = Color(0xFF3A3F47), style = Fill)
             drawPath(tailPath, color = Color(0xFF3A3F47), style = Fill)
         }
@@ -198,11 +206,12 @@ fun CharacterMessage(
             text = displayedText,
             style = dialogue_14rg,
             color = Color.White,
-            modifier = Modifier
-                .padding(16.dp)
-                .padding(start = if(tailPosition == MESSAGE_TAIL_START) 10.dp else 0.dp)
-                .align(Alignment.CenterStart)
-                .background(Color.Transparent)
+            modifier =
+                Modifier
+                    .padding(16.dp)
+                    .padding(start = if (tailPosition == MESSAGE_TAIL_START) 10.dp else 0.dp)
+                    .align(Alignment.CenterStart)
+                    .background(Color.Transparent),
         )
     }
 }
@@ -210,7 +219,7 @@ fun CharacterMessage(
 @Preview(showBackground = true)
 @Composable
 private fun CharacterMessageView() {
-    CharacterMessage("닉네임을\n입력해주세요.")
+    CharacterMessage("닉네임을입력해주세요.")
 }
 
 @Preview(showBackground = true)
