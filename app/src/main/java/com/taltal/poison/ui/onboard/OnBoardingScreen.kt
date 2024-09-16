@@ -151,7 +151,7 @@ private fun OnBoardingPreview() {
 }
 
 const val NICKNAME_PAGE = 0
-const val PROFILE_PAGE = 1
-const val PURPOSE_PAGE = 2
+const val PROFILE_PAGE = 2
+const val PURPOSE_PAGE = 1
 const val LOADING_PAGE = 3
 const val GOAL_PAGE = 4
